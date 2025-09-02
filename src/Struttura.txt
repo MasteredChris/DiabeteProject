@@ -1,0 +1,343 @@
+# Struttura Progetto Sistema Telemedicina Diabetici
+
+## Architettura del Progetto
+
+### Pacchetti principali:
+- `model` - Classi del dominio e logica di business
+- `view` - Controller JavaFX e file FXML
+- `controller` - Controller MVC per coordinare Model e View
+- `dao` - Data Access Objects per gestione CSV
+- `util` - Classi di utilità
+- `main` - Classe principale
+
+---
+
+## MODEL (Dominio)
+
+### 1. Classe `Utente` (classe base astratta)
+**Attributi:**
+- `String id`
+- `String username`
+- `String password`
+- `String nome`
+- `String cognome`
+- `String email`
+
+**Metodi:**
+- Costruttori
+- Getter/Setter
+- `abstract String getTipoUtente()`
+- `boolean authenticate(String username, String password)`
+
+### 2. Classe `Paziente` (extends Utente)
+**Attributi:**
+- `String medicoRiferimento` (ID del medico)
+- `List<String> fattoriRischio` (fumatore, ex-fumatore, obesità, ecc.)
+- `List<String> patologiePregresse`
+- `List<String> comorbidita`
+- `LocalDate dataRegistrazione`
+
+**Metodi:**
+- Costruttori
+- Getter/Setter
+- `String getTipoUtente()` → "PAZIENTE"
+- `void aggiungiRilevazione(Rilevazione rilevazione)`
+- `void aggiungiAssunzione(AssunzioneFarmaco assunzione)`
+
+### 3. Classe `Diabetologo` (extends Utente)
+**Attributi:**
+- `String numeroAlbo`
+- `String specializzazione`
+
+**Metodi:**
+- Costruttori
+- Getter/Setter
+- `String getTipoUtente()` → "MEDICO"
+- `void prescriviTerapia(String idPaziente, Terapia terapia)`
+- `void modificaTerapia(String idTerapia, Terapia nuovaTerapia)`
+
+### 4. Classe `Rilevazione`
+**Attributi:**
+- `String id`
+- `String idPaziente`
+- `LocalDateTime dataOra`
+- `int valoreGlicemia` (mg/dL)
+- `TipoRilevazione tipo` (PRIMA_PASTO, DOPO_PASTO)
+- `String note`
+- `List<String> sintomi` (spossatezza, nausea, mal di testa, ecc.)
+
+**Metodi:**
+- Costruttori
+- Getter/Setter
+- `boolean isNormale()` - verifica se il valore è nei range normali
+- `GradoAllerta getGradoAllerta()` - restituisce il livello di allerta
+
+### 5. Classe `Terapia`
+**Attributi:**
+- `String id`
+- `String idPaziente`
+- `String idMedico`
+- `String farmaco`
+- `int assunzioniGiornaliere`
+- `double quantitaPerAssunzione`
+- `String indicazioni` (dopo i pasti, lontano dai pasti, ecc.)
+- `LocalDate dataInizio`
+- `LocalDate dataFine` (nullable)
+- `boolean attiva`
+
+**Metodi:**
+- Costruttori
+- Getter/Setter
+- `boolean isAttiva()`
+- `List<OrarioAssunzione> calcolaOrariAssunzione()`
+
+### 6. Classe `AssunzioneFarmaco`
+**Attributi:**
+- `String id`
+- `String idPaziente`
+- `String idTerapia`
+- `LocalDateTime dataOraAssunzione`
+- `LocalDateTime dataOraPrevista`
+- `String farmaco`
+- `double quantitaAssunta`
+- `boolean assunta`
+
+**Metodi:**
+- Costruttori
+- Getter/Setter
+- `boolean isInRitardo()`
+- `long getMinutiRitardo()`
+
+### 7. Classe `Alert`
+**Attributi:**
+- `String id`
+- `String idPaziente`
+- `String idMedico`
+- `TipoAlert tipo` (GLICEMIA_ALTA, FARMACO_DIMENTICATO, TERAPIA_NON_SEGUITA)
+- `LocalDateTime dataCreazione`
+- `String messaggio`
+- `boolean visualizzato`
+- `GradoUrgenza urgenza`
+
+**Metodi:**
+- Costruttori
+- Getter/Setter
+- `void marcaVisualizzato()`
+
+### 8. Enum `TipoRilevazione`
+- `PRIMA_PASTO`
+- `DOPO_PASTO`
+
+### 9. Enum `TipoAlert`
+- `GLICEMIA_ALTA`
+- `FARMACO_DIMENTICATO`
+- `TERAPIA_NON_SEGUITA`
+
+### 10. Enum `GradoAllerta`
+- `NORMALE`
+- `ATTENZIONE`
+- `URGENTE`
+
+---
+
+## CONTROLLER (MVC)
+
+### 1. Classe `SistemaController`
+**Attributi:**
+- `UtenteDAO utenteDAO`
+- `RilevazioneDAO rilevazioneDAO`
+- `TerapiaDAO terapiaDAO`
+- `AssunzioneFarmacoDAO assunzioneFarmacoDAO`
+- `AlertDAO alertDAO`
+- `Utente utenteCorrente`
+
+**Metodi:**
+- `boolean login(String username, String password)`
+- `void logout()`
+- `Utente getUtenteCorrente()`
+- `boolean registraPaziente(Paziente paziente)`
+- `boolean registraMedico(Diabetologo medico)`
+
+### 2. Classe `PazienteController`
+**Attributi:**
+- `SistemaController sistema`
+
+**Metodi:**
+- `void aggiungiRilevazione(int glicemia, TipoRilevazione tipo, List<String> sintomi)`
+- `void aggiungiAssunzioneFarmaco(String idTerapia, LocalDateTime dataOra, double quantita)`
+- `List<Rilevazione> getRilevazioniPeriodo(LocalDate inizio, LocalDate fine)`
+- `List<Terapia> getTerapieAttive()`
+- `List<AssunzioneFarmaco> getAssunzioniGiorno(LocalDate giorno)`
+- `void inviaEmailMedico(String messaggio)`
+
+### 3. Classe `MedicoController`
+**Attributi:**
+- `SistemaController sistema`
+
+**Metodi:**
+- `List<Paziente> getPazienti()`
+- `void prescriviTerapia(String idPaziente, Terapia terapia)`
+- `void modificaTerapia(String idTerapia, Terapia nuovaTerapia)`
+- `List<Rilevazione> getRilevazioniPaziente(String idPaziente, LocalDate inizio, LocalDate fine)`
+- `List<Alert> getAlert()`
+- `void aggiornaInfoPaziente(String idPaziente, List<String> fattoriRischio, List<String> comorbidita)`
+- `Map<String, Object> getStatistichePaziente(String idPaziente)`
+
+### 4. Classe `AlertController`
+**Attributi:**
+- `SistemaController sistema`
+
+**Metodi:**
+- `void verificaGlicemieAnomale()`
+- `void verificaTerapieNonSeguite()`
+- `void verificaFarmaciDimenticati()`
+- `void creaAlert(String idPaziente, TipoAlert tipo, String messaggio, GradoUrgenza urgenza)`
+- `List<Alert> getAlertMedico(String idMedico)`
+
+---
+
+## DAO (Data Access Objects)
+
+### 1. Interface `GenericDAO<T>`
+**Metodi:**
+- `void save(T entity)`
+- `T findById(String id)`
+- `List<T> findAll()`
+- `void update(T entity)`
+- `void delete(String id)`
+
+### 2. Classe `UtenteDAO` (implements GenericDAO<Utente>)
+**Metodi specifici:**
+- `Utente findByUsername(String username)`
+- `List<Paziente> findAllPazienti()`
+- `List<Diabetologo> findAllMedici()`
+- `Paziente findPazienteByMedico(String idMedico)`
+
+### 3. Classe `RilevazioneDAO` (implements GenericDAO<Rilevazione>)
+**Metodi specifici:**
+- `List<Rilevazione> findByPaziente(String idPaziente)`
+- `List<Rilevazione> findByPazienteAndPeriodo(String idPaziente, LocalDate inizio, LocalDate fine)`
+- `List<Rilevazione> findRilevazioniAnomale()`
+
+### 4. Classe `TerapiaDAO` (implements GenericDAO<Terapia>)
+**Metodi specifici:**
+- `List<Terapia> findByPaziente(String idPaziente)`
+- `List<Terapia> findTerapieAttive(String idPaziente)`
+- `Terapia findTerapiaAttivaPaziente(String idPaziente, String farmaco)`
+
+### 5. Classe `AssunzioneFarmacoDAO` (implements GenericDAO<AssunzioneFarmaco>)
+**Metodi specifici:**
+- `List<AssunzioneFarmaco> findByPaziente(String idPaziente)`
+- `List<AssunzioneFarmaco> findByTerapia(String idTerapia)`
+- `List<AssunzioneFarmaco> findAssunzioniMancanti(String idPaziente, LocalDate data)`
+
+### 6. Classe `AlertDAO` (implements GenericDAO<Alert>)
+**Metodi specifici:**
+- `List<Alert> findByMedico(String idMedico)`
+- `List<Alert> findNonVisualizzati()`
+- `List<Alert> findByPaziente(String idPaziente)`
+
+---
+
+## VIEW (JavaFX Controllers)
+
+### 1. Classe `LoginViewController`
+**Attributi FXML:**
+- `TextField usernameField`
+- `PasswordField passwordField`
+- `Button loginButton`
+- `Label errorLabel`
+
+**Metodi:**
+- `void initialize()`
+- `void handleLogin()`
+- `void showError(String message)`
+
+### 2. Classe `PazienteDashboardViewController`
+**Attributi FXML:**
+- `TableView<Rilevazione> rilevazioniTable`
+- `TableView<Terapia> terapieTable`
+- `TextField glicemiaField`
+- `ComboBox<TipoRilevazione> tipoRilevazioneCombo`
+- `TextArea sintomiArea`
+
+**Metodi:**
+- `void initialize()`
+- `void handleAggiungiRilevazione()`
+- `void handleRegistraAssunzione()`
+- `void aggiornaTabelle()`
+
+### 3. Classe `MedicoDashboardViewController`
+**Attributi FXML:**
+- `TableView<Paziente> pazientiTable`
+- `TableView<Alert> alertTable`
+- `LineChart<String, Number> glicemiaChart`
+
+**Metodi:**
+- `void initialize()`
+- `void handleSelezionePaziente()`
+- `void handlePrescriviTerapia()`
+- `void aggiornaGrafico(String idPaziente)`
+
+### 4. Classe `TerapiaViewController`
+**Attributi FXML:**
+- `TextField farmacoField`
+- `Spinner<Integer> assunzioniSpinner`
+- `TextField quantitaField`
+- `TextArea indicazioniArea`
+
+**Metodi:**
+- `void initialize()`
+- `void handleSalvaTerapia()`
+- `void handleModificaTerapia()`
+
+---
+
+## UTIL
+
+### 1. Classe `CSVUtil`
+**Metodi statici:**
+- `List<String[]> readCSV(String filename)`
+- `void writeCSV(String filename, List<String[]> data)`
+- `void appendToCSV(String filename, String[] row)`
+
+### 2. Classe `ValidationUtil`
+**Metodi statici:**
+- `boolean isValidEmail(String email)`
+- `boolean isValidGlicemia(int valore, TipoRilevazione tipo)`
+- `boolean isValidPassword(String password)`
+
+### 3. Classe `DateUtil`
+**Metodi statici:**
+- `String formatDate(LocalDateTime date)`
+- `LocalDateTime parseDate(String dateString)`
+- `boolean isInRange(LocalDateTime data, LocalDate inizio, LocalDate fine)`
+
+---
+
+## MAIN
+
+### Classe `MainApp` (extends Application)
+**Metodi:**
+- `void start(Stage primaryStage)`
+- `public static void main(String[] args)`
+
+---
+
+## File FXML necessari:
+- `login.fxml`
+- `paziente-dashboard.fxml`
+- `medico-dashboard.fxml`
+- `terapia-form.fxml`
+- `rilevazione-form.fxml`
+- `alert-dialog.fxml`
+
+## File CSS:
+- `styles.css` (per lo styling delle interfacce)
+
+## File CSV per persistenza:
+- `utenti.csv`
+- `rilevazioni.csv`
+- `terapie.csv`
+- `assunzioni.csv`
+- `alert.csv`
