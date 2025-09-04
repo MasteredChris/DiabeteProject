@@ -1,0 +1,8 @@
+id,username,password,nome,cognome,email,userType,medicoRiferimento,fattoriRischio,patologiePregresse,comorbidita,dataRegistrazione,numeroAlbo,specializzazione
+USR_001,mario.rossi,password123,Mario,Rossi,mario.rossi@email.com,PAZIENTE,MED_001,fumatore;obesità,ipertensione,cardiopatia,2024-01-15,,
+USR_002,giulia.bianchi,mypass456,Giulia,Bianchi,giulia.bianchi@email.com,PAZIENTE,MED_001,ex-fumatore,,,2024-02-20,,
+USR_003,luca.verdi,secure789,Luca,Verdi,luca.verdi@email.com,PAZIENTE,MED_002,obesità,ipertensione;colesterolo alto,,2024-01-10,,
+USR_004,anna.ferrari,pass2024,Anna,Ferrari,anna.ferrari@email.com,PAZIENTE,MED_001,,,,2024-03-01,,
+USR_005,francesco.lombardi,mypassword,Francesco,Lombardi,f.lombardi@email.com,PAZIENTE,MED_002,fumatore,cardiopatia,insufficienza renale,2024-01-25,,
+MED_001,dr.smith,medpass123,Giovanni,Smith,g.smith@ospedale.it,MEDICO,,,,,,,123456,Diabetologia
+MED_002,dr.lopez,docpass456,Maria,Lopez,m.lopez@clinica.it,MEDICO,,,,,,,789012,Endocrinologia

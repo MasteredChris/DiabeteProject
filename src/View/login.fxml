@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.LoginViewController">
+    <center>
+        <VBox alignment="CENTER" spacing="20.0" styleClass="login-container">
+            <padding>
+                <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+            </padding>
+
+            <!-- Titolo -->
+            <Label styleClass="login-title" text="Sistema Telemedicina">
+                <font>
+                    <Font name="System Bold" size="24.0" />
+                </font>
+            </Label>
+            <Label styleClass="login-subtitle" text="Gestione Diabete">
+                <font>
+                    <Font size="14.0" />
+                </font>
+            </Label>
+
+            <!-- Form di login -->
+            <VBox spacing="15.0" styleClass="login-form">
+                <GridPane hgap="10.0" vgap="10.0">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="NEVER" minWidth="80.0" prefWidth="80.0" />
+                        <ColumnConstraints hgrow="ALWAYS" minWidth="200.0" prefWidth="200.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+
+                    <Label text="Username:" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                        <font>
+                            <Font size="12.0" />
+                        </font>
+                    </Label>
+                    <TextField fx:id="usernameField" promptText="Inserisci username" styleClass="login-field" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                    <Label text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                        <font>
+                            <Font size="12.0" />
+                        </font>
+                    </Label>
+                    <PasswordField fx:id="passwordField" promptText="Inserisci password" styleClass="login-field" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                </GridPane>
+            </VBox>
+
+            <!-- Messaggio di errore -->
+            <Label fx:id="errorLabel" styleClass="error-label" text="" textFill="RED" wrapText="true">
+                <font>
+                    <Font size="11.0" />
+                </font>
+            </Label>
+
+            <!-- Pulsanti -->
+            <HBox alignment="CENTER" spacing="10.0">
+                <Button fx:id="loginButton" defaultButton="true" onAction="#handleLogin" prefWidth="100.0" styleClass="primary-button" text="Login">
+                    <font>
+                        <Font name="System Bold" size="12.0" />
+                    </font>
+                </Button>
+                <Button fx:id="exitButton" cancelButton="true" onAction="#handleExit" prefWidth="100.0" styleClass="secondary-button" text="Esci">
+                    <font>
+                        <Font size="12.0" />
+                    </font>
+                </Button>
+            </HBox>
+
+            <!-- Info utenti demo -->
+            <VBox alignment="CENTER" spacing="5.0" styleClass="demo-info">
+                <Label styleClass="demo-title" text="Utenti Demo:">
+                    <font>
+                        <Font name="System Bold" size="11.0" />
+                    </font>
+                </Label>
+                <Label styleClass="demo-text" text="Paziente: mario.rossi / password123">
+                    <font>
+                        <Font size="10.0" />
+                    </font>
+                </Label>
+                <Label styleClass="demo-text" text="Medico: dr.smith / medpass123">
+                    <font>
+                        <Font size="10.0" />
+                    </font>
+                </Label>
+            </VBox>
+        </VBox>
+    </center>
+
+    <!-- Footer -->
+    <bottom>
+        <HBox alignment="CENTER" styleClass="footer">
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+            <Label styleClass="footer-text" text="© 2024 Sistema Telemedicina - Gestione Diabete">
+                <font>
+                    <Font size="10.0" />
+                </font>
+            </Label>
+        </HBox>
+    </bottom>
+</BorderPane>

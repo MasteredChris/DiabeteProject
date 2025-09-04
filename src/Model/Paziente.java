@@ -1,5 +1,8 @@
 package Model;
 
+import Controller.MedicoController;
+import Controller.PazienteController;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -11,12 +14,19 @@ public class Paziente extends Utente {
     private List<String> comorbidita;
     private LocalDate dataRegistrazione;
 
+    private PazienteController pazienteController;
+
     public Paziente(String id, String username, String password, String nome, String cognome, String email, List<String> fattoriRichio, List<String> patologiePregresse, List<String> comorbidita, LocalDate dataRegistrazione) {
         super(id, username, password, nome, cognome, email);
         this.fattoriRischio = fattoriRischio;
         this.patologiePregresse = patologiePregresse;
         this.comorbidita = comorbidita;
         this.dataRegistrazione = dataRegistrazione;
+    }
+
+    // Setter per il controller (viene impostato dopo il login)
+    public void setPazienteController(PazienteController pazienteController) {
+        this.pazienteController = pazienteController;
     }
 
     @Override

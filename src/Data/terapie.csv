@@ -1,0 +1,10 @@
+id,idPaziente,idMedico,farmaco,assunzioniGiornaliere,quantitaPerAssunzione,indicazioni,dataInizio,dataFine,attiva
+TER_001,USR_001,MED_001,Metformina,2,500.0,Assumere durante i pasti,2024-01-15,2024-07-15,false
+TER_002,USR_001,MED_001,Metformina,2,850.0,Assumere durante i pasti,2024-07-16,,true
+TER_003,USR_002,MED_001,Gliclazide,1,30.0,Assumere 30 minuti prima di colazione,2024-02-20,,true
+TER_004,USR_003,MED_002,Metformina,3,500.0,Assumere durante i pasti principali,2024-01-10,,true
+TER_005,USR_003,MED_002,Insulina Lantus,1,20.0,Iniezione sottocutanea prima di dormire,2024-03-01,,true
+TER_006,USR_004,MED_001,Metformina,2,500.0,Assumere durante pranzo e cena,2024-03-01,,true
+TER_007,USR_005,MED_002,Insulina Humalog,3,8.0,Prima dei pasti principali,2024-01-25,,true
+TER_008,USR_005,MED_002,Metformina,2,1000.0,Assumere durante i pasti,2024-01-25,,true
+TER_009,USR_002,MED_001,Metformina,1,500.0,Terapia iniziale - sospesa per effetti collaterali,2024-02-20,2024-02-25,false

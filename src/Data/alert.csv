@@ -1,0 +1,9 @@
+id,idPaziente,idMedico,tipo,dataCreazione,messaggio,visualizzato,urgenza
+ALT_001,USR_002,MED_001,GLICEMIA_ALTA,2024-12-01 14:35:00,Giulia Bianchi - Glicemia anomala: 190 mg/dL,false,ATTENZIONE
+ALT_002,USR_003,MED_002,GLICEMIA_ALTA,2024-12-01 07:50:00,Luca Verdi - Glicemia anomala: 75 mg/dL,true,ATTENZIONE
+ALT_003,USR_002,MED_001,GLICEMIA_ALTA,2024-12-02 08:05:00,URGENTE: Giulia Bianchi - Glicemia critica: 320 mg/dL,false,URGENTE
+ALT_004,USR_005,MED_002,GLICEMIA_ALTA,2024-12-01 08:35:00,URGENTE: Francesco Lombardi - Glicemia critica: 45 mg/dL,true,URGENTE
+ALT_005,USR_001,MED_001,FARMACO_DIMENTICATO,2024-12-02 22:30:00,Mario Rossi ha dimenticato di prendere Metformina alle 20:00,false,NORMALE
+ALT_006,USR_003,MED_002,FARMACO_DIMENTICATO,2024-12-01 22:30:00,Luca Verdi ha dimenticato di prendere Metformina alle 20:00,true,NORMALE
+ALT_007,USR_005,MED_002,FARMACO_DIMENTICATO,2024-12-01 22:30:00,Francesco Lombardi ha dimenticato di prendere Insulina Humalog alle 20:00,false,NORMALE
+ALT_008,USR_003,MED_002,TERAPIA_NON_SEGUITA,2024-12-02 09:00:00,Luca Verdi non sta seguendo la terapia con Metformina (2/6 dosi),false,URGENTE
