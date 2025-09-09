@@ -1,0 +1,6 @@
+id,type,nome,cognome,email,password,medicoId
+1,Paziente,Mario,Rossi,mario@esempio.com,1234,2
+2,Diabetologo,Luigi,Bianchi,dottore@esempio.com,abcd,
+3,Paziente,Anna,Verdi,anna@esempio.com,pwd,2
+4,Paziente,Carlo,Neri,carlo@esempio.com,1111,5
+5,Diabetologo,Simona,Gialli,dottore2@esempio.com,abcd,

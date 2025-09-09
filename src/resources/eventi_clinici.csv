@@ -1,0 +1,4 @@
+pazienteId,tipo,descrizione,dataInizio,dataFine,note
+1,SINTOMO,Mal di testa,2025-09-01,,Dopo terapia serale
+1,PATOLOGIA,Ipertensione,2024-01-01,,In terapia da anni
+2,SINTOMO,Nausea,2025-08-15,2025-08-20,Lieve,autolimitante

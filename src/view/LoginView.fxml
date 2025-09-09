@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="view.LoginViewController"
+            prefHeight="400" prefWidth="400"
+            style="-fx-background-color: linear-gradient(to bottom right, #E3F2FD, #BBDEFB);">
+
+    <children>
+        <VBox spacing="20" alignment="CENTER" AnchorPane.topAnchor="40" AnchorPane.leftAnchor="40"
+              AnchorPane.rightAnchor="40" AnchorPane.bottomAnchor="40"
+              style="-fx-background-color: rgba(255,255,255,0.8); -fx-padding: 30; -fx-background-radius: 15;">
+
+            <Label text="Sistema Diabete" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1565C0;" />
+
+            <TextField fx:id="emailField" promptText="Email" maxWidth="250"
+                       style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #90CAF9; -fx-padding: 5;"/>
+
+            <PasswordField fx:id="passwordField" promptText="Password" maxWidth="250"
+                           style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #90CAF9; -fx-padding: 5;"/>
+
+            <Button text="Accedi" onAction="#handleLogin" maxWidth="150"
+                    style="-fx-background-color: #1565C0; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10;" />
+
+            <Label fx:id="messageLabel" textFill="red" style="-fx-font-size: 12px;"/>
+
+        </VBox>
+    </children>
+</AnchorPane>
