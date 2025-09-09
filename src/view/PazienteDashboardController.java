@@ -299,22 +299,20 @@ public class PazienteDashboardController {
         alert.showAndWait();
     }
 
-    @FXML
-    private void handleApriContatta() {
+    @FXML private void handleApriContatta() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("ContattaMedico.fxml"));
             Stage stage = new Stage();
             stage.setScene(new javafx.scene.Scene(loader.load()));
             stage.setTitle("Contatta Medico");
-
             ContattaMedicoController controller = loader.getController();
             controller.setPaziente(paziente); // passa il paziente corrente
-
-            stage.show();
+             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
             showAlert("Errore", "Impossibile aprire la finestra per contattare il medico.");
         }
     }
+
 
 }

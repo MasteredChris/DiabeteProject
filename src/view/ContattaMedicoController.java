@@ -8,6 +8,7 @@ import model.Paziente;
 
 import java.net.URI;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 public class ContattaMedicoController {
 
@@ -37,11 +38,14 @@ public class ContattaMedicoController {
         }
 
         try {
-            // Codifica URL per oggetto e corpo
+            // Codifica URL per oggetto e corpo, sostituendo i + con %20
+            String oggettoEnc = URLEncoder.encode(oggetto, StandardCharsets.UTF_8).replace("+", "%20");
+            String corpoEnc = URLEncoder.encode(corpo, StandardCharsets.UTF_8).replace("+", "%20");
+
             String uriStr = String.format("mailto:%s?subject=%s&body=%s",
                     destinatario,
-                    URLEncoder.encode(oggetto, "UTF-8"),
-                    URLEncoder.encode(corpo, "UTF-8"));
+                    oggettoEnc,
+                    corpoEnc);
 
             // Apre il client email predefinito
             java.awt.Desktop.getDesktop().mail(new URI(uriStr));

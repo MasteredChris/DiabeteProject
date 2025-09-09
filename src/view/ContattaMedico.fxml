@@ -4,9 +4,22 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<VBox xmlns="http://javafx.com/javafx/20" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="view.ContattaMedicoController" spacing="10" >
-    <Label text="Scrivi il messaggio al tuo medico:"/>
-    <TextArea fx:id="messaggioArea" prefRowCount="10"/>
-    <Button text="Invia" onAction="#handleInvia"/>
+<VBox xmlns="http://javafx.com/javafx/20"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="view.ContattaMedicoController"
+      spacing="15" alignment="CENTER"
+      style="-fx-background-color: #f7f9fc; -fx-padding: 20; -fx-border-radius: 10; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+
+    <Label text="Scrivi il messaggio al tuo medico:"
+           style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #4A90E2;" />
+
+    <TextArea fx:id="messaggioArea" prefRowCount="10"
+              promptText="Scrivi qui il tuo messaggio..."
+              style="-fx-font-size: 14px; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 5;" />
+
+    <HBox alignment="CENTER_RIGHT">
+        <Button text="Invia" onAction="#handleInvia"
+                style="-fx-background-color: #4A90E2; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 8 20 8 20; -fx-background-radius: 5;" />
+    </HBox>
+
 </VBox>
