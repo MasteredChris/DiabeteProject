@@ -59,7 +59,7 @@
                         <Label text="Valore:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
                         <TextField fx:id="valoreField" promptText="mg/dL" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                         <Button onAction="#handleSalvaRilevazione" style="-fx-background-color: #4A90E2; -fx-text-fill: white; -fx-background-radius: 5;" text="Aggiungi" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-                        <Button onAction="#handleEliminaRilevazione" style="-fx-background-color: #4A90E2; -fx-text-fill: white; -fx-background-radius: 5;" text="Elimina" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <Button onAction="#handleEliminaRilevazione" prefHeight="25.0" prefWidth="74.0" style="-fx-background-color: #4A90E2; -fx-text-fill: white; -fx-background-radius: 5;" text="Elimina" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                   <columnConstraints>
                      <ColumnConstraints />
                      <ColumnConstraints />
