@@ -44,14 +44,14 @@
             <HBox spacing="20" HBox.hgrow="ALWAYS">
                 <!-- Rilevazioni -->
                 <VBox spacing="10" style="-fx-background-color: #f7f9fc; -fx-padding: 10; -fx-border-radius: 8; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
-                    <Label style="-fx-font-weight: bold; -fx-font-size: 16px;" text="Rilevazioni" />
+                    <Label style="-fx-font-weight: bold; -fx-font-size: 16px;" text="Rilevazioni di glicemia" />
                     <GridPane hgap="10" vgap="10">
                         <Label text="Data:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                        <DatePicker fx:id="datePicker" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-                        <Label text="Tipo Pasto:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                        <DatePicker fx:id="datePicker" promptText="YYYY-MM-DD" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                        <Label prefHeight="17.0" prefWidth="137.0" text="Momento del giorno:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
                         <ChoiceBox fx:id="tipoPastoChoice" prefHeight="25.0" prefWidth="173.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <Label text="Valore:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-                        <TextField fx:id="valoreField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <TextField fx:id="valoreField" promptText="mg/dL" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                         <Button onAction="#handleSalvaRilevazione" style="-fx-background-color: #4A90E2; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;" text="Aggiungi" GridPane.columnIndex="0" GridPane.rowIndex="3" />
                         <Button onAction="#handleEliminaRilevazione" prefHeight="25.0" prefWidth="79.0" style="-fx-background-color: #4A90E2; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;" text="Elimina" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                   <columnConstraints>
@@ -69,7 +69,7 @@
                     <TableView fx:id="rilevazioniTable" prefHeight="300" VBox.vgrow="ALWAYS">
                         <columns>
                             <TableColumn fx:id="dataColumn" prefWidth="120" text="Data" />
-                            <TableColumn fx:id="tipoPastoColumn" prefWidth="150" text="Tipo Pasto" />
+                            <TableColumn fx:id="tipoPastoColumn" prefWidth="150" text="Momento del giorno" />
                             <TableColumn fx:id="valoreColumn" prefWidth="100" text="Valore (mg/dL)" />
                         </columns>
                     </TableView>
@@ -77,10 +77,10 @@
 
                 <!-- Assunzioni -->
                 <VBox spacing="10" style="-fx-background-color: #f7f9fc; -fx-padding: 10; -fx-border-radius: 8; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
-                    <Label style="-fx-font-weight: bold; -fx-font-size: 16px;" text="Assunzioni" />
+                    <Label style="-fx-font-weight: bold; -fx-font-size: 16px;" text="Assunzioni di farmaci" />
                     <GridPane hgap="10" vgap="10">
                         <Label text="Data:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                        <DatePicker fx:id="assunzioneDatePicker" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                        <DatePicker fx:id="assunzioneDatePicker" promptText="YYYY-MM-DD" GridPane.columnIndex="1" GridPane.rowIndex="0" />
                         <Label text="Ora:" GridPane.columnIndex="2" GridPane.rowIndex="0" />
                         <TextField fx:id="oraField" promptText="HH:mm" GridPane.columnIndex="3" GridPane.rowIndex="0" />
 
@@ -120,7 +120,7 @@
 
             <!-- Terapie -->
             <VBox spacing="10" style="-fx-background-color: #f7f9fc; -fx-padding: 10; -fx-border-radius: 8; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);" VBox.vgrow="ALWAYS">
-                <Label style="-fx-font-weight: bold; -fx-font-size: 16px;" text="Terapie" />
+                <Label style="-fx-font-weight: bold; -fx-font-size: 16px;" text="Terapie prescritte" />
                 <TableView fx:id="terapieTable" VBox.vgrow="ALWAYS">
                     <columns>
                         <TableColumn fx:id="farmacoColumn" prefWidth="150" text="Farmaco" />
@@ -133,6 +133,29 @@
                     </columns>
                 </TableView>
             </VBox>
+
+            <!-- Eventi clinici -->
+            <VBox spacing="5" style="-fx-background-color: #f7f9fc; -fx-padding: 10; -fx-border-radius: 8; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+                <Label style="-fx-font-weight: bold; -fx-font-size: 16px;" text="Hai nuovi sintomi o patologie?" />
+
+                <TableView fx:id="eventiTable" prefHeight="150">
+                    <columns>
+                        <TableColumn fx:id="tipoEventoColumn" prefWidth="100" text="Tipo" />
+                        <TableColumn fx:id="descrizioneEventoColumn" prefWidth="200" text="Descrizione" />
+                        <TableColumn fx:id="dataEventoColumn" prefWidth="100" text="Data" />
+                        <TableColumn fx:id="oraEventoColumn" prefWidth="80" text="Ora" />
+                        <TableColumn fx:id="noteEventoColumn" prefWidth="200" text="Note" />
+                    </columns>
+                </TableView>
+
+                <HBox spacing="10">
+                    <ChoiceBox fx:id="tipoEventoChoice" />
+                    <TextField fx:id="descrizioneEventoField" promptText="Descrizione" />
+                    <TextField fx:id="noteEventoField" promptText="Note (opzionale)" />
+                    <Button onAction="#handleAggiungiEvento" text="Aggiungi" />
+                </HBox>
+            </VBox>
+
 
         </VBox>
     </center>

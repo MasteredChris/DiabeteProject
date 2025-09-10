@@ -99,6 +99,19 @@
                 </HBox>
             </VBox>
 
+            <TableView fx:id="eventiTable" prefHeight="200">
+                <columns>
+                    <TableColumn fx:id="tipoEventoColumn" text="Tipo" prefWidth="120" />
+                    <TableColumn fx:id="descrizioneEventoColumn" text="Descrizione" prefWidth="200" />
+                    <TableColumn fx:id="dataEventoColumn" text="Data" prefWidth="100" />
+                    <TableColumn fx:id="oraEventoColumn" text="Ora" prefWidth="80" />
+                    <TableColumn fx:id="noteEventoColumn" text="Note" prefWidth="200" />
+                </columns>
+            </TableView>
+
+
+
+
         </VBox>
     </SplitPane>
 </VBox>

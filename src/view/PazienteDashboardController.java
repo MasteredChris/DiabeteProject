@@ -49,11 +49,26 @@ public class PazienteDashboardController {
     @FXML private TableColumn<Assunzione, String> farmacoAssunzioneColumn;
     @FXML private TableColumn<Assunzione, Number> quantitaAssunzioneColumn;
 
+    @FXML private TableView<EventoClinico> eventiTable;
+    @FXML private TableColumn<EventoClinico, String> tipoEventoColumn;
+    @FXML private TableColumn<EventoClinico, String> descrizioneEventoColumn;
+    @FXML private TableColumn<EventoClinico, String> dataEventoColumn;
+    @FXML private TableColumn<EventoClinico, String> oraEventoColumn;
+    @FXML private TableColumn<EventoClinico, String> noteEventoColumn;
+
+    @FXML private ChoiceBox<String> tipoEventoChoice;
+    @FXML private TextField descrizioneEventoField;
+    @FXML private TextField noteEventoField;
+
+    private final String eventiFile = "src/resources/eventi_clinici.csv";
+
+
     private Paziente paziente;
     private DataController dataController = new DataController();
     private final String rilevazioniFile = "src/resources/rilevazioni.csv";
     private final String terapieFile = "src/resources/terapie.csv";
     private final String assunzioniFile = "src/resources/assunzioni.csv";
+    private final String eventiCliniciFile = "src/resources/eventi_clinici.csv";
 
     @FXML
     public void initialize() {
@@ -79,6 +94,17 @@ public class PazienteDashboardController {
         oraAssunzioneColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getOra().toString()));
         farmacoAssunzioneColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getFarmaco()));
         quantitaAssunzioneColumn.setCellValueFactory(c -> new SimpleDoubleProperty(c.getValue().getQuantita()));
+
+        // ChoiceBox tipo
+        tipoEventoChoice.getItems().addAll("Sintomo", "Patologia");
+
+        // Colonne tabella
+        tipoEventoColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getTipo()));
+        descrizioneEventoColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getDescrizione()));
+        dataEventoColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getData().toString()));
+        oraEventoColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getOra().toString()));
+        noteEventoColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getNote()));
+
 
         terapieTable.setRowFactory(tv -> new TableRow<>() {
             @Override
@@ -117,6 +143,10 @@ public class PazienteDashboardController {
         aggiornaListaAssunzioni();
 
         aggiornaFarmaciChoice();
+        // Carica eventi clinici e aggiorna la tabella
+        paziente.getEventiClinici().clear();
+        dataController.caricaEventiClinici(eventiCliniciFile, List.of(paziente));
+        aggiornaListaEventi();
     }
 
     @FXML
@@ -314,5 +344,35 @@ public class PazienteDashboardController {
         }
     }
 
+
+    @FXML
+    private void handleAggiungiEvento() {
+        String tipo = tipoEventoChoice.getValue();
+        String descrizione = descrizioneEventoField.getText();
+        String note = noteEventoField.getText();
+
+        if (tipo == null || descrizione.isEmpty()) {
+            showAlert("Errore", "Seleziona il tipo e scrivi la descrizione.");
+            return;
+        }
+
+        LocalDate oggi = LocalDate.now();
+        LocalTime ora = java.time.LocalTime.now();
+
+        EventoClinico e = new EventoClinico(tipo, descrizione, oggi, ora, note);
+        paziente.aggiungiEventoClinico(e); // metodo da aggiungere in Paziente
+
+        dataController.salvaEventiClinici(eventiFile, List.of(paziente));
+        aggiornaListaEventi();
+
+        descrizioneEventoField.clear();
+        noteEventoField.clear();
+    }
+
+    private void aggiornaListaEventi() {
+        ObservableList<EventoClinico> lista = FXCollections.observableArrayList(paziente.getEventiClinici());
+        lista.sort(Comparator.comparing(EventoClinico::getData).thenComparing(EventoClinico::getOra).reversed());
+        eventiTable.setItems(lista);
+    }
 
 }

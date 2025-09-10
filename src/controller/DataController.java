@@ -259,44 +259,59 @@ public class DataController {
     }
 
     // ---------- EVENTI CLINICI ----------
-    public void caricaEventiClinici(String file, List<Utente> utenti) {
-        Map<Integer, Paziente> pazientiMap = utenti.stream()
-                .filter(u -> u instanceof Paziente)
-                .map(u -> (Paziente) u)
-                .collect(Collectors.toMap(Paziente::getId, p -> p));
 
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            br.readLine(); // intestazione
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] c = line.split(",");
-                if (c.length < 6) continue;
-                Paziente p = pazientiMap.get(Integer.parseInt(c[0]));
-                if (p != null) {
-                    p.aggiungiEventoClinico(new EventoClinico(
-                            EventoClinico.Tipo.valueOf(c[1]),
-                            c[2],
-                            LocalDate.parse(c[3]),
-                            c[4].isEmpty() ? null : LocalDate.parse(c[4]),
-                            c[5].isEmpty() ? null : c[5]
-                    ));
+    public void caricaEventiClinici(String filePath, List<Utente> utenti) {
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String riga;
+            boolean primaRiga = true;
+
+            while ((riga = br.readLine()) != null) {
+                if (primaRiga) {
+                    primaRiga = false;
+                    continue; // salta l'intestazione
+                }
+
+                String[] campi = riga.split(",", -1); // -1 per preservare campi vuoti
+                if (campi.length < 6) continue;
+
+                int pazienteId = Integer.parseInt(campi[0].trim());
+                String tipo = campi[1].trim();
+                String descrizione = campi[2].trim();
+                LocalDate data = LocalDate.parse(campi[3].trim());
+                LocalTime ora = LocalTime.parse(campi[4].trim());
+                String note = campi[5].trim();
+
+                EventoClinico evento = new EventoClinico(tipo, descrizione, data, ora, note);
+
+                for (Utente u : utenti) {
+                    if (u instanceof Paziente p && p.getId() == pazienteId) {
+                        p.aggiungiEventoClinico(evento);
+                        break;
+                    }
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+
+
 
     public void salvaEventiClinici(String file, List<Paziente> pazienti) {
         salvaConMerge(file, pazienti,
                 riga -> riga.split(",")[0],
                 p -> p.getEventiClinici().stream()
-                        .map(e -> p.getId() + "," + e.getTipo() + "," + e.getDescrizione() + "," +
-                                e.getDataInizio() + "," + (e.getDataFine() != null ? e.getDataFine() : "") + "," +
+                        .map(e -> p.getId() + "," +
+                                e.getTipo() + "," +
+                                e.getDescrizione() + "," +
+                                e.getData() + "," +
+                                (e.getOra() != null ? e.getOra() : "") + "," +
                                 (e.getNote() != null ? e.getNote() : ""))
                         .toList(),
-                "pazienteId,tipo,descrizione,dataInizio,dataFine,note");
+                "pazienteId,tipo,descrizione,data,ora,note");
     }
+
 
     // ---------- TERAPIE CONCOMITANTI ----------
     public void caricaTerapieConcomitanti(String file, List<Utente> utenti) {

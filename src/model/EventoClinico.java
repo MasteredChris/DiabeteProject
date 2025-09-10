@@ -1,72 +1,28 @@
 package model;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class EventoClinico {
-    public enum Tipo {
-        SINTOMO,
-        PATOLOGIA
-    }
-
-    private Tipo tipo;
+    private int pazienteId;
+    private String tipo;          // "Sintomo" o "Patologia"
     private String descrizione;
-    private LocalDate dataInizio;
-    private LocalDate dataFine; // opzionale
+    private LocalDate data;       // solo data
+    private LocalTime ora;        // solo ora
     private String note;
 
-    public EventoClinico(Tipo tipo, String descrizione, LocalDate dataInizio, LocalDate dataFine, String note) {
+    public EventoClinico(String tipo, String descrizione, LocalDate data, LocalTime ora, String note) {
         this.tipo = tipo;
         this.descrizione = descrizione;
-        this.dataInizio = dataInizio;
-        this.dataFine = dataFine;
+        this.data = data;
+        this.ora = ora;
         this.note = note;
     }
 
-    public Tipo getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(Tipo tipo) {
-        this.tipo = tipo;
-    }
-
-    public String getDescrizione() {
-        return descrizione;
-    }
-
-    public void setDescrizione(String descrizione) {
-        this.descrizione = descrizione;
-    }
-
-    public LocalDate getDataInizio() {
-        return dataInizio;
-    }
-
-    public void setDataInizio(LocalDate dataInizio) {
-        this.dataInizio = dataInizio;
-    }
-
-    public LocalDate getDataFine() {
-        return dataFine;
-    }
-
-    public void setDataFine(LocalDate dataFine) {
-        this.dataFine = dataFine;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
-
-    @Override
-    public String toString() {
-        return tipo + ": " + descrizione +
-                " (" + dataInizio +
-                (dataFine != null ? " - " + dataFine : "") + ")";
-    }
+    // getter e setter
+    public String getTipo() { return tipo; }
+    public String getDescrizione() { return descrizione; }
+    public LocalDate getData() { return data; }
+    public LocalTime getOra() { return ora; }
+    public String getNote() { return note; }
 }
-

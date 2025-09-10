@@ -15,6 +15,7 @@ import javafx.fxml.FXMLLoader;
 import model.*;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -24,13 +25,13 @@ public class DiabetologoDashboardController {
     @FXML private Label welcomeLabel;
     @FXML private ListView<Paziente> pazientiList;
 
-    // Rilevazioni
+    // ---------- Rilevazioni ----------
     @FXML private TableView<Rilevazione> rilevazioniTable;
     @FXML private TableColumn<Rilevazione, String> dataColumn;
     @FXML private TableColumn<Rilevazione, String> tipoPastoColumn;
     @FXML private TableColumn<Rilevazione, Integer> valoreColumn;
 
-    // Terapie
+    // ---------- Terapie ----------
     @FXML private TableView<Terapia> terapieTable;
     @FXML private TableColumn<Terapia, String> farmacoColumn;
     @FXML private TableColumn<Terapia, Integer> assunzioniColumn;
@@ -40,18 +41,26 @@ public class DiabetologoDashboardController {
     @FXML private TableColumn<Terapia, String> dataFineColumn;
     @FXML private TableColumn<Terapia, Terapia.Stato> statoColumn;
 
-    // Assunzioni
+    // ---------- Assunzioni ----------
     @FXML private TableView<Assunzione> assunzioniTable;
     @FXML private TableColumn<Assunzione, String> dataAssunzioneColumn;
     @FXML private TableColumn<Assunzione, String> oraAssunzioneColumn;
     @FXML private TableColumn<Assunzione, String> farmacoAssunzioneColumn;
     @FXML private TableColumn<Assunzione, Number> quantitaAssunzioneColumn;
 
-    // Scheda clinica
+    // ---------- Scheda clinica ----------
     @FXML private TextArea fattoriRischioArea;
     @FXML private TextArea patologieArea;
     @FXML private TextArea comorbiditaArea;
     @FXML private Button salvaSchedaBtn;
+
+    // ---------- Eventi clinici ----------
+    @FXML private TableView<EventoClinico> eventiTable;
+    @FXML private TableColumn<EventoClinico, String> tipoEventoColumn;
+    @FXML private TableColumn<EventoClinico, String> descrizioneEventoColumn;
+    @FXML private TableColumn<EventoClinico, String> dataEventoColumn;
+    @FXML private TableColumn<EventoClinico, String> oraEventoColumn;
+    @FXML private TableColumn<EventoClinico, String> noteEventoColumn;
 
     private String schedeFile = "src/resources/schede_cliniche.csv";
 
@@ -60,12 +69,12 @@ public class DiabetologoDashboardController {
 
     @FXML
     public void initialize() {
-        // Configura colonne Rilevazioni
+        // ---------- Colonne Rilevazioni ----------
         dataColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getData().toString()));
         tipoPastoColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getTipoPasto()));
         valoreColumn.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().getValore()));
 
-        // Configura colonne Terapie
+        // ---------- Colonne Terapie ----------
         farmacoColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getFarmaco()));
         assunzioniColumn.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().getAssunzioniGiornaliere()));
         quantitaColumn.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().getQuantitaPerAssunzione()));
@@ -101,7 +110,7 @@ public class DiabetologoDashboardController {
             }
         });
 
-        // Colonne Assunzioni
+        // ---------- Colonne Assunzioni ----------
         dataAssunzioneColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getData().toString()));
         oraAssunzioneColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getOra().toString()));
         farmacoAssunzioneColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getFarmaco()));
@@ -109,6 +118,15 @@ public class DiabetologoDashboardController {
 
         // Colonna stato modificabile
         statoColumn.setCellFactory(tc -> new ComboBoxTableCell<>(Terapia.Stato.values()));
+
+        // ---------- Colonne Eventi Clinici ----------
+        tipoEventoColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getTipo()));
+        descrizioneEventoColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getDescrizione()));
+        dataEventoColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getData().toString()));
+        oraEventoColumn.setCellValueFactory(c -> new SimpleStringProperty(
+                c.getValue().getOra() != null ? c.getValue().getOra().toString() : ""
+        ));
+        noteEventoColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getNote()));
     }
 
     public void setUtente(Diabetologo diabetologo) {
@@ -116,17 +134,16 @@ public class DiabetologoDashboardController {
         welcomeLabel.setText("Benvenuto Dr. " + diabetologo.getNome() + " " + diabetologo.getCognome());
         pazientiList.setItems(FXCollections.observableArrayList(diabetologo.getPazienti()));
 
-        // Listener selezione paziente
         pazientiList.getSelectionModel().selectedItemProperty().addListener((obs, oldP, newP) -> {
             if (newP != null) {
                 mostraRilevazioni(newP);
                 mostraTerapie(newP);
                 mostraAssunzioni(newP);
                 mostraSchedaClinica(newP);
+                mostraEventi(newP);
             }
         });
 
-        // Listener modifica stato Terapia
         statoColumn.setOnEditCommit(event -> {
             Terapia t = event.getRowValue();
             Terapia.Stato nuovoStato = event.getNewValue();
@@ -136,7 +153,6 @@ public class DiabetologoDashboardController {
             LocalDate oggi = LocalDate.now();
             if (!oggi.isBefore(t.getDataInizio()) && !oggi.isAfter(t.getDataFine())) {
                 t.setStato(nuovoStato);
-                // Salva solo il paziente selezionato
                 dataController.salvaTerapie("src/resources/terapie.csv", List.of(selected));
                 mostraTerapie(selected);
             } else {
@@ -144,7 +160,26 @@ public class DiabetologoDashboardController {
                 terapieTable.refresh();
             }
         });
+
+        pazientiList.setItems(FXCollections.observableArrayList(diabetologo.getPazienti()));
+        pazientiList.getSelectionModel().selectedItemProperty().addListener((obs, oldP, newP) -> {
+            if (newP != null) {
+                mostraRilevazioni(newP);
+                mostraTerapie(newP);
+                mostraAssunzioni(newP);
+                mostraSchedaClinica(newP);
+                mostraEventi(newP);
+            }
+        });
+
+// Seleziona automaticamente il primo paziente
+        if (!diabetologo.getPazienti().isEmpty()) {
+            pazientiList.getSelectionModel().selectFirst();
+        }
+
     }
+
+    // ---------- Metodi di visualizzazione ----------
 
     private void mostraRilevazioni(Paziente p) {
         ObservableList<Rilevazione> lista = FXCollections.observableArrayList(p.getRilevazioni());
@@ -207,6 +242,50 @@ public class DiabetologoDashboardController {
         assunzioniTable.setItems(lista);
     }
 
+    private void mostraSchedaClinica(Paziente p) {
+        if (p.getSchedaClinica() != null) {
+            fattoriRischioArea.setText(p.getSchedaClinica().getFattoriRischio());
+            patologieArea.setText(p.getSchedaClinica().getPregressePatologie());
+            comorbiditaArea.setText(p.getSchedaClinica().getComorbidita());
+        } else {
+            fattoriRischioArea.clear();
+            patologieArea.clear();
+            comorbiditaArea.clear();
+        }
+    }
+
+    private void mostraEventi(Paziente p) {
+        ObservableList<EventoClinico> lista = FXCollections.observableArrayList(p.getEventiClinici());
+        lista.sort(Comparator.comparing(EventoClinico::getData).reversed()
+                .thenComparing(e -> e.getOra() != null ? e.getOra() : LocalTime.MIDNIGHT, Comparator.reverseOrder()));
+        eventiTable.setItems(lista);
+    }
+
+
+
+    // ---------- Utility ----------
+
+    private void showCustomAlert(String titolo, String messaggio, Alert.AlertType tipo) {
+        Alert alert = new Alert(tipo);
+        alert.setTitle(titolo);
+        alert.setHeaderText(null);
+        alert.setContentText(messaggio);
+        alert.showAndWait();
+    }
+
+    @FXML
+    private void handleLogout() {
+        try {
+            Stage stage = (Stage) welcomeLabel.getScene().getWindow();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("LoginView.fxml"));
+            stage.setScene(new Scene(loader.load()));
+            stage.setTitle("Login - Sistema Diabete");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ---------- Metodi Terapie ----------
     @FXML
     private void handleAggiungiTerapia() {
         Paziente selected = pazientiList.getSelectionModel().getSelectedItem();
@@ -257,19 +336,6 @@ public class DiabetologoDashboardController {
         });
     }
 
-
-    private void mostraSchedaClinica(Paziente p) {
-        if (p.getSchedaClinica() != null) {
-            fattoriRischioArea.setText(p.getSchedaClinica().getFattoriRischio());
-            patologieArea.setText(p.getSchedaClinica().getPregressePatologie());
-            comorbiditaArea.setText(p.getSchedaClinica().getComorbidita());
-        } else {
-            fattoriRischioArea.clear();
-            patologieArea.clear();
-            comorbiditaArea.clear();
-        }
-    }
-
     @FXML
     private void handleSalvaSchedaClinica() {
         Paziente selected = pazientiList.getSelectionModel().getSelectedItem();
@@ -285,28 +351,7 @@ public class DiabetologoDashboardController {
         );
         selected.setSchedaClinica(scheda);
 
-        // Salva solo il paziente selezionato
         dataController.salvaSchedeCliniche(schedeFile, List.of(selected));
         showCustomAlert("Successo", "Scheda clinica salvata correttamente.", Alert.AlertType.INFORMATION);
-    }
-
-    private void showCustomAlert(String titolo, String messaggio, Alert.AlertType tipo) {
-        Alert alert = new Alert(tipo);
-        alert.setTitle(titolo);
-        alert.setHeaderText(null);
-        alert.setContentText(messaggio);
-        alert.showAndWait();
-    }
-
-    @FXML
-    private void handleLogout() {
-        try {
-            Stage stage = (Stage) welcomeLabel.getScene().getWindow();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("LoginView.fxml"));
-            stage.setScene(new Scene(loader.load()));
-            stage.setTitle("Login - Sistema Diabete");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }

@@ -9,3 +9,5 @@ pazienteId,farmaco,assunzioniGiornaliere,quantitaPerAssunzione,indicazioni,dataI
 1,444,23432,32423.0,23423,2025-09-21,2025-10-05,ATTIVA,2
 1,fff,234,23432.0,23432,2025-09-06,2025-09-14,TERMINATA,2
 1,www,123,213.0,12321,2025-09-09,2025-09-30,ATTIVA,2
+6,Cerume,4,20.0,Prenderlo su per il naso,2025-09-10,2025-09-17,ATTIVA,7
+6,Cianuro,1,15.0,,2025-09-09,2025-09-16,ATTIVA,7

@@ -13,6 +13,7 @@ public class LoginController {
     private final String terapieFile = "src/resources/terapie.csv";
     private final String assunzioniFile = "src/resources/assunzioni.csv";
     private final String schedeFile = "src/resources/schede_cliniche.csv";
+    private final String eventiCliniciFile = "src/resources/eventi_clinici.csv";
 
     public LoginController() {
         dataController = new DataController();
@@ -26,6 +27,7 @@ public class LoginController {
         dataController.caricaTerapie(terapieFile, utenti);
         dataController.caricaAssunzioni(assunzioniFile,utenti);
         dataController.caricaSchedeCliniche(schedeFile,utenti);
+        dataController.caricaEventiClinici(eventiCliniciFile,utenti);
     }
 
     /**
