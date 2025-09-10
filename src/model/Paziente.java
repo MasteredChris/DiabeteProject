@@ -51,6 +51,9 @@ public class Paziente extends Utente {
     public void aggiungiTerapiaConcomitante(TerapiaConcomitante t) {
         terapieConcomitanti.add(t);
     }
+    public void rimuoviTerapiaConcomitante(TerapiaConcomitante t) {
+        terapieConcomitanti.remove(t);
+    }
 
     public void aggiungiRilevazione(Rilevazione r) {
         rilevazioni.add(r);

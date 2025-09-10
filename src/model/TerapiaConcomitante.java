@@ -1,56 +1,32 @@
 package model;
 
-import java.time.LocalDate;
-
 public class TerapiaConcomitante {
-    private String farmaco;
-    private LocalDate dataInizio;
-    private LocalDate dataFine; // opzionale
-    private String note;
+    private String tipoTerapia;
+    private String descrizione;
 
-    public TerapiaConcomitante(String farmaco, LocalDate dataInizio, LocalDate dataFine, String note) {
-        this.farmaco = farmaco;
-        this.dataInizio = dataInizio;
-        this.dataFine = dataFine;
-        this.note = note;
+    public TerapiaConcomitante(String tipoTerapia, String descrizione) {
+        this.tipoTerapia = tipoTerapia;
+        this.descrizione = descrizione;
     }
 
-    public String getFarmaco() {
-        return farmaco;
+    public String getTipoTerapia() {
+        return tipoTerapia;
     }
 
-    public void setFarmaco(String farmaco) {
-        this.farmaco = farmaco;
+    public void setTipoTerapia(String tipoTerapia) {
+        this.tipoTerapia = tipoTerapia;
     }
 
-    public LocalDate getDataInizio() {
-        return dataInizio;
+    public String getDescrizione() {
+        return descrizione;
     }
 
-    public void setDataInizio(LocalDate dataInizio) {
-        this.dataInizio = dataInizio;
-    }
-
-    public LocalDate getDataFine() {
-        return dataFine;
-    }
-
-    public void setDataFine(LocalDate dataFine) {
-        this.dataFine = dataFine;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
+    public void setDescrizione(String descrizione) {
+        this.descrizione = descrizione;
     }
 
     @Override
     public String toString() {
-        return farmaco +
-                " (" + dataInizio +
-                (dataFine != null ? " - " + dataFine : "") + ")";
+        return tipoTerapia + (descrizione != null && !descrizione.isEmpty() ? " - " + descrizione : "");
     }
 }

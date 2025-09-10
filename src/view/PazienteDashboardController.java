@@ -61,6 +61,11 @@ public class PazienteDashboardController {
     @FXML private TextField descrizioneEventoField;
     @FXML private TextField noteEventoField;
 
+    @FXML private TextField tipoTerapiaField;
+    @FXML private TextField descrizioneTerapiaField;
+    @FXML private ListView<TerapiaConcomitante> terapieConcomitantiList;
+
+
     @FXML private HBox pagina1;
     @FXML private HBox pagina2;
 
@@ -72,6 +77,7 @@ public class PazienteDashboardController {
     private final String assunzioniFile = "src/resources/assunzioni.csv";
     private final String eventiCliniciFile = "src/resources/eventi_clinici.csv";
     private final String eventiFile = "src/resources/eventi_clinici.csv";
+    private final String terapieConcomitantiFile= "src/resources/terapie_concomitanti.csv";
 
     @FXML
     public void initialize() {
@@ -132,25 +138,42 @@ public class PazienteDashboardController {
         if (paziente.getMedico() != null)
             medicoLabel.setText("Medico curante: Dr. " + paziente.getMedico().getNome() + " " + paziente.getMedico().getCognome());
 
-        // Ricarica dati dal CSV usando DataController
+        // Carica rilevazioni
         paziente.getRilevazioni().clear();
         dataController.caricaRilevazioni(rilevazioniFile, List.of(paziente));
         aggiornaListaRilevazioni();
 
+        // Carica terapie
         paziente.getTerapie().clear();
         dataController.caricaTerapie(terapieFile, List.of(paziente));
         aggiornaListaTerapie();
 
+        // Carica assunzioni
         paziente.getAssunzioni().clear();
         dataController.caricaAssunzioni(assunzioniFile, List.of(paziente));
         aggiornaListaAssunzioni();
 
+        // Aggiorna lista farmaci
         aggiornaFarmaciChoice();
-        // Carica eventi clinici e aggiorna la tabella
+
+        // Carica eventi clinici
         paziente.getEventiClinici().clear();
         dataController.caricaEventiClinici(eventiCliniciFile, List.of(paziente));
         aggiornaListaEventi();
+
+        // Carica terapie concomitanti
+        paziente.getTerapieConcomitanti().clear();
+        dataController.caricaTerapieConcomitanti(terapieConcomitantiFile, List.of(paziente));
+        aggiornaListaTerapieConcomitanti();
     }
+
+    private void aggiornaListaTerapieConcomitanti() {
+        if (paziente != null) {
+            terapieConcomitantiList.getItems().clear();
+            terapieConcomitantiList.getItems().addAll(paziente.getTerapieConcomitanti());
+        }
+    }
+
 
     @FXML
     private void handleSalvaRilevazione() {
@@ -377,6 +400,51 @@ public class PazienteDashboardController {
         lista.sort(Comparator.comparing(EventoClinico::getData).thenComparing(EventoClinico::getOra).reversed());
         eventiTable.setItems(lista);
     }
+
+// ---------- Terapie Concomitanti ----------
+
+    @FXML
+    private void handleAggiungiTerapiaConcomitante() {
+        String tipo = tipoTerapiaField.getText().trim();
+        String descrizione = descrizioneTerapiaField.getText().trim();
+
+        if (tipo.isEmpty()) {
+            showAlert("Errore", "Inserisci il tipo di terapia.");
+            return;
+        }
+
+        TerapiaConcomitante nuova = new TerapiaConcomitante(tipo, descrizione);
+        paziente.aggiungiTerapiaConcomitante(nuova);
+
+        dataController.salvaTerapieConcomitanti(terapieConcomitantiFile, List.of(paziente));
+        aggiornaListaTerapieConcomitanti();
+
+        tipoTerapiaField.clear();
+        descrizioneTerapiaField.clear();
+    }
+
+    @FXML
+    private void handleRimuoviTerapiaConcomitante() {
+        TerapiaConcomitante selezionata = terapieConcomitantiList.getSelectionModel().getSelectedItem();
+        if (selezionata == null) {
+            showAlert("Attenzione", "Seleziona una terapia concomitante da rimuovere.");
+            return;
+        }
+
+        Alert conferma = new Alert(Alert.AlertType.CONFIRMATION,
+                "Vuoi davvero rimuovere questa terapia concomitante?",
+                ButtonType.YES, ButtonType.NO);
+        conferma.showAndWait();
+
+        if (conferma.getResult() == ButtonType.YES) {
+            paziente.rimuoviTerapiaConcomitante(selezionata);
+
+            dataController.salvaTerapieConcomitanti(terapieConcomitantiFile, List.of(paziente));
+            aggiornaListaTerapieConcomitanti();
+        }
+    }
+
+
 
     @FXML
     private void mostraPagina1() {

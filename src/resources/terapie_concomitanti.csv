@@ -1,4 +1,5 @@
-pazienteId,farmaco,dataInizio,dataFine,note
-1,Metformina,2025-08-01,,Presa insieme ad altra terapia
-1,Amlodipina,2025-06-10,,Per pressione alta
-2,Vitamina D,2025-07-01,2025-08-01,Integratore
+pazienteId,tipoTerapia,descrizione
+4,sdfsd,sdfds
+4,gfhfg,hghfhfg
+4,hgmghnm,hgnghn
+1,dsfgd,fdgdf

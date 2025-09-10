@@ -64,10 +64,18 @@ public class DiabetologoDashboardController {
     @FXML private TableColumn<EventoClinico, String> oraEventoColumn;
     @FXML private TableColumn<EventoClinico, String> noteEventoColumn;
 
+    @FXML private ListView<TerapiaConcomitante> terapieConcomitantiMedicoList;
+
     @FXML private VBox pagina1;
     @FXML private VBox pagina2;
 
     private String schedeFile = "src/resources/schede_cliniche.csv";
+    private final String rilevazioniFile = "src/resources/rilevazioni.csv";
+    private final String terapieFile = "src/resources/terapie.csv";
+    private final String assunzioniFile = "src/resources/assunzioni.csv";
+    private final String eventiCliniciFile = "src/resources/eventi_clinici.csv";
+    private final String eventiFile = "src/resources/eventi_clinici.csv";
+    private final String terapieConcomitantiFile= "src/resources/terapie_concomitanti.csv";
 
     private Diabetologo diabetologo;
     private DataController dataController = new DataController();
@@ -139,6 +147,26 @@ public class DiabetologoDashboardController {
         welcomeLabel.setText("Benvenuto Dr. " + diabetologo.getNome() + " " + diabetologo.getCognome());
         pazientiList.setItems(FXCollections.observableArrayList(diabetologo.getPazienti()));
 
+        // Carica tutti i dati dei pazienti incluso le terapie concomitanti
+        for (Paziente p : diabetologo.getPazienti()) {
+            p.getRilevazioni().clear();
+            dataController.caricaRilevazioni(rilevazioniFile, List.of(p));
+
+            p.getTerapie().clear();
+            dataController.caricaTerapie(terapieFile, List.of(p));
+
+            p.getAssunzioni().clear();
+            dataController.caricaAssunzioni(assunzioniFile, List.of(p));
+
+            p.getEventiClinici().clear();
+            dataController.caricaEventiClinici(eventiCliniciFile, List.of(p));
+
+            // Carica TERAPIE CONCOMITANTI
+            p.getTerapieConcomitanti().clear();
+            dataController.caricaTerapieConcomitanti(terapieConcomitantiFile, List.of(p));
+        }
+
+        // Listener per selezione paziente
         pazientiList.getSelectionModel().selectedItemProperty().addListener((obs, oldP, newP) -> {
             if (newP != null) {
                 mostraRilevazioni(newP);
@@ -146,43 +174,16 @@ public class DiabetologoDashboardController {
                 mostraAssunzioni(newP);
                 mostraSchedaClinica(newP);
                 mostraEventi(newP);
+                aggiornaTerapieConcomitanti(newP); // Aggiorna anche la lista delle terapie concomitanti
             }
         });
 
-        statoColumn.setOnEditCommit(event -> {
-            Terapia t = event.getRowValue();
-            Terapia.Stato nuovoStato = event.getNewValue();
-            Paziente selected = pazientiList.getSelectionModel().getSelectedItem();
-            if (selected == null) return;
-
-            LocalDate oggi = LocalDate.now();
-            if (!oggi.isBefore(t.getDataInizio()) && !oggi.isAfter(t.getDataFine())) {
-                t.setStato(nuovoStato);
-                dataController.salvaTerapie("src/resources/terapie.csv", List.of(selected));
-                mostraTerapie(selected);
-            } else {
-                showCustomAlert("Errore", "Non puoi modificare lo stato fuori intervallo valido.", Alert.AlertType.ERROR);
-                terapieTable.refresh();
-            }
-        });
-
-        pazientiList.setItems(FXCollections.observableArrayList(diabetologo.getPazienti()));
-        pazientiList.getSelectionModel().selectedItemProperty().addListener((obs, oldP, newP) -> {
-            if (newP != null) {
-                mostraRilevazioni(newP);
-                mostraTerapie(newP);
-                mostraAssunzioni(newP);
-                mostraSchedaClinica(newP);
-                mostraEventi(newP);
-            }
-        });
-
-// Seleziona automaticamente il primo paziente
+        // Seleziona automaticamente il primo paziente
         if (!diabetologo.getPazienti().isEmpty()) {
             pazientiList.getSelectionModel().selectFirst();
         }
-
     }
+
 
     // ---------- Metodi di visualizzazione ----------
 
@@ -358,6 +359,10 @@ public class DiabetologoDashboardController {
 
         dataController.salvaSchedeCliniche(schedeFile, List.of(selected));
         showCustomAlert("Successo", "Scheda clinica salvata correttamente.", Alert.AlertType.INFORMATION);
+    }
+
+    private void aggiornaTerapieConcomitanti(Paziente paziente) {
+        terapieConcomitantiMedicoList.getItems().setAll(paziente.getTerapieConcomitanti());
     }
 
     @FXML

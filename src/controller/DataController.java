@@ -321,19 +321,18 @@ public class DataController {
                 .collect(Collectors.toMap(Paziente::getId, p -> p));
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            br.readLine(); // intestazione
+            br.readLine(); // salta intestazione
             String line;
             while ((line = br.readLine()) != null) {
-                String[] c = line.split(",");
-                if (c.length < 5) continue;
-                Paziente p = pazientiMap.get(Integer.parseInt(c[0]));
+                String[] campi = line.split(",", -1); // -1 per preservare campi vuoti
+                if (campi.length < 3) continue;
+                int pazienteId = Integer.parseInt(campi[0].trim());
+                String tipo = campi[1].trim();
+                String descrizione = campi[2].trim();
+
+                Paziente p = pazientiMap.get(pazienteId);
                 if (p != null) {
-                    p.aggiungiTerapiaConcomitante(new TerapiaConcomitante(
-                            c[1],
-                            LocalDate.parse(c[2]),
-                            c[3].isEmpty() ? null : LocalDate.parse(c[3]),
-                            c[4].isEmpty() ? null : c[4]
-                    ));
+                    p.aggiungiTerapiaConcomitante(new TerapiaConcomitante(tipo, descrizione));
                 }
             }
         } catch (IOException e) {
@@ -345,12 +344,12 @@ public class DataController {
         salvaConMerge(file, pazienti,
                 riga -> riga.split(",")[0],
                 p -> p.getTerapieConcomitanti().stream()
-                        .map(t -> p.getId() + "," + t.getFarmaco() + "," + t.getDataInizio() + "," +
-                                (t.getDataFine() != null ? t.getDataFine() : "") + "," +
-                                (t.getNote() != null ? t.getNote() : ""))
+                        .map(t -> p.getId() + "," + t.getTipoTerapia() + "," +
+                                (t.getDescrizione() != null ? t.getDescrizione() : ""))
                         .toList(),
-                "pazienteId,farmaco,dataInizio,dataFine,note");
+                "pazienteId,tipoTerapia,descrizione");
     }
+
 
 
 }
