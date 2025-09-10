@@ -10,7 +10,6 @@ import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxTableCell;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
@@ -22,7 +21,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-public class DiabetologoDashboardController {
+public class DiabetologoDashboardController extends BaseController {
 
     @FXML private Label welcomeLabel;
     @FXML private ListView<Paziente> pazientiList;
@@ -69,28 +68,35 @@ public class DiabetologoDashboardController {
     @FXML private VBox pagina1;
     @FXML private VBox pagina2;
 
-    private String schedeFile = "src/resources/schede_cliniche.csv";
-    private final String rilevazioniFile = "src/resources/rilevazioni.csv";
-    private final String terapieFile = "src/resources/terapie.csv";
-    private final String assunzioniFile = "src/resources/assunzioni.csv";
-    private final String eventiCliniciFile = "src/resources/eventi_clinici.csv";
-    private final String eventiFile = "src/resources/eventi_clinici.csv";
-    private final String terapieConcomitantiFile= "src/resources/terapie_concomitanti.csv";
+    private static final Map<String, Integer> ORDINE_PASTI = Map.of(
+            "Dopo cena", 1,
+            "Prima cena", 2,
+            "Dopo pranzo", 3,
+            "Prima pranzo", 4,
+            "Dopo colazione", 5,
+            "Prima colazione", 6
+    );
 
     private Diabetologo diabetologo;
-    private DataController dataController = new DataController();
+    private final DataController dataController = new DataController();
+    private final FilePathProvider filePathProvider = new FilePathProvider();
 
     @FXML
     public void initialize() {
-
         AppState.getInstance().setDiabetologoDashboardController(this);
 
-        // ---------- Colonne Rilevazioni ----------
+        initializeTableColumns();
+        initializeRowFactories();
+        initializeEditableColumns();
+    }
+
+    private void initializeTableColumns() {
+        // Rilevazioni columns
         dataColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getData().toString()));
         tipoPastoColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getTipoPasto()));
         valoreColumn.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().getValore()));
 
-        // ---------- Colonne Terapie ----------
+        // Terapie columns
         farmacoColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getFarmaco()));
         assunzioniColumn.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().getAssunzioniGiornaliere()));
         quantitaColumn.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().getQuantitaPerAssunzione()));
@@ -99,43 +105,13 @@ public class DiabetologoDashboardController {
         dataFineColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getDataFine().toString()));
         statoColumn.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().getStato()));
 
-        // Colore righe Terapie
-        terapieTable.setRowFactory(tv -> new TableRow<Terapia>() {
-            @Override
-            protected void updateItem(Terapia item, boolean empty) {
-                super.updateItem(item, empty);
-                if (item == null || empty) setStyle("");
-                else {
-                    switch (item.getStato()) {
-                        case ATTIVA -> setStyle("-fx-background-color: lightgreen;");
-                        case IN_PAUSA -> setStyle("-fx-background-color: orange;");
-                        case TERMINATA -> setStyle("-fx-background-color: tomato;");
-                    }
-                }
-            }
-        });
-
-        // Colore righe Rilevazioni fuori range
-        rilevazioniTable.setRowFactory(tv -> new TableRow<Rilevazione>() {
-            @Override
-            protected void updateItem(Rilevazione item, boolean empty) {
-                super.updateItem(item, empty);
-                if (item == null || empty) setStyle("");
-                else if (item.isFuoriRange()) setStyle("-fx-background-color: tomato;");
-                else setStyle("");
-            }
-        });
-
-        // ---------- Colonne Assunzioni ----------
+        // Assunzioni columns
         dataAssunzioneColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getData().toString()));
         oraAssunzioneColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getOra().toString()));
         farmacoAssunzioneColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getFarmaco()));
         quantitaAssunzioneColumn.setCellValueFactory(c -> new SimpleDoubleProperty(c.getValue().getQuantita()));
 
-        // Colonna stato modificabile
-        statoColumn.setCellFactory(tc -> new ComboBoxTableCell<>(Terapia.Stato.values()));
-
-        // ---------- Colonne Eventi Clinici ----------
+        // Eventi clinici columns
         tipoEventoColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getTipo()));
         descrizioneEventoColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getDescrizione()));
         dataEventoColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getData().toString()));
@@ -145,290 +121,351 @@ public class DiabetologoDashboardController {
         noteEventoColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getNote()));
     }
 
-    public void setUtente(Diabetologo diabetologo) {
-        AppState.getInstance().setDiabetologoDashboardController(this);
-
-        this.diabetologo = diabetologo;
-        welcomeLabel.setText("Benvenuto Dr. " + diabetologo.getNome() + " " + diabetologo.getCognome());
-        pazientiList.setItems(FXCollections.observableArrayList(diabetologo.getPazienti()));
-        mostraNotifichePendenti();
-        // Carica tutti i dati dei pazienti incluso le terapie concomitanti
-        for (Paziente p : diabetologo.getPazienti()) {
-            p.getRilevazioni().clear();
-            dataController.caricaRilevazioni(rilevazioniFile, List.of(p));
-
-            p.getTerapie().clear();
-            dataController.caricaTerapie(terapieFile, List.of(p));
-
-            p.getAssunzioni().clear();
-            dataController.caricaAssunzioni(assunzioniFile, List.of(p));
-
-            p.getEventiClinici().clear();
-            dataController.caricaEventiClinici(eventiCliniciFile, List.of(p));
-
-            // Carica TERAPIE CONCOMITANTI
-            p.getTerapieConcomitanti().clear();
-            dataController.caricaTerapieConcomitanti(terapieConcomitantiFile, List.of(p));
-        }
-
-        // Listener per selezione paziente
-        pazientiList.getSelectionModel().selectedItemProperty().addListener((obs, oldP, newP) -> {
-            if (newP != null) {
-                mostraRilevazioni(newP);
-                mostraTerapie(newP);
-                mostraAssunzioni(newP);
-                mostraSchedaClinica(newP);
-                mostraEventi(newP);
-                aggiornaTerapieConcomitanti(newP); // Aggiorna anche la lista delle terapie concomitanti
+    private void initializeRowFactories() {
+        // Terapie row coloring
+        terapieTable.setRowFactory(tv -> new TableRow<Terapia>() {
+            @Override
+            protected void updateItem(Terapia item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setStyle("");
+                } else {
+                    setStyle(getStyleForTerapiaStato(item.getStato()));
+                }
             }
         });
 
-        // Seleziona automaticamente il primo paziente
-        if (!diabetologo.getPazienti().isEmpty()) {
-            pazientiList.getSelectionModel().selectFirst();
-        }
-    }
-
-
-    // ---------- Metodi di visualizzazione ----------
-
-    private void mostraRilevazioni(Paziente p) {
-        ObservableList<Rilevazione> lista = FXCollections.observableArrayList(p.getRilevazioni());
-        Map<String, Integer> ordinePasti = Map.of(
-                "Dopo cena", 1,
-                "Prima cena", 2,
-                "Dopo pranzo", 3,
-                "Prima pranzo", 4,
-                "Dopo colazione", 5,
-                "Prima colazione", 6
-        );
-        lista.sort(Comparator
-                .comparing(Rilevazione::getData).reversed()
-                .thenComparing(r -> ordinePasti.getOrDefault(r.getTipoPasto(), Integer.MAX_VALUE))
-        );
-        rilevazioniTable.setItems(lista);
-
-        rilevazioniTable.setRowFactory(tv -> new TableRow<>() {
+        // Rilevazioni row coloring for out-of-range values
+        rilevazioniTable.setRowFactory(tv -> new TableRow<Rilevazione>() {
             @Override
-            protected void updateItem(Rilevazione r, boolean empty) {
-                super.updateItem(r, empty);
-                if (r == null || empty) setStyle("");
-                else {
-                    String colore = determinaColore(r.getTipoPasto(), r.getValore());
+            protected void updateItem(Rilevazione item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setStyle("");
+                } else {
+                    String colore = determinaColore(item.getTipoPasto(), item.getValore());
                     setStyle("-fx-background-color: " + colore + "; -fx-text-fill: black;");
                 }
             }
         });
     }
 
-    private String determinaColore(String tipoPasto, int valore) {
-        if (tipoPasto.toLowerCase().contains("prima")) {
-            if (valore < 80) return "deepskyblue";
-            else if (valore <= 130) return "lightgreen";
-            else if (valore <= 180) return "khaki";
-            else return "orange";
-        } else {
-            if (valore < 180) return "lightgreen";
-            else if (valore <= 250) return "orange";
-            else return "tomato";
+    private void initializeEditableColumns() {
+        statoColumn.setCellFactory(tc -> new ComboBoxTableCell<>(Terapia.Stato.values()));
+    }
+
+    public void setUtente(Diabetologo diabetologo) {
+        this.diabetologo = diabetologo;
+        initializeUserInterface();
+        loadPatientsData();
+        setupPatientSelectionListener();
+        selectFirstPatient();
+    }
+
+    private void initializeUserInterface() {
+        welcomeLabel.setText("Benvenuto Dr. " + diabetologo.getNome() + " " + diabetologo.getCognome());
+        pazientiList.setItems(FXCollections.observableArrayList(diabetologo.getPazienti()));
+        mostraNotifichePendenti();
+    }
+
+    private void loadPatientsData() {
+        for (Paziente paziente : diabetologo.getPazienti()) {
+            loadPatientData(paziente);
         }
     }
 
-    private void mostraTerapie(Paziente p) {
-        LocalDate oggi = LocalDate.now();
-        for (Terapia t : p.getTerapie()) {
-            if (t.getStato() == Terapia.Stato.ATTIVA && oggi.isAfter(t.getDataFine())) {
-                t.setStato(Terapia.Stato.TERMINATA);
+    private void loadPatientData(Paziente paziente) {
+        paziente.getRilevazioni().clear();
+        dataController.caricaRilevazioni(filePathProvider.getRilevazioniFile(), List.of(paziente));
+
+        paziente.getTerapie().clear();
+        dataController.caricaTerapie(filePathProvider.getTerapieFile(), List.of(paziente));
+
+        paziente.getAssunzioni().clear();
+        dataController.caricaAssunzioni(filePathProvider.getAssunzioniFile(), List.of(paziente));
+
+        paziente.getEventiClinici().clear();
+        dataController.caricaEventiClinici(filePathProvider.getEventiCliniciFile(), List.of(paziente));
+
+        paziente.getTerapieConcomitanti().clear();
+        dataController.caricaTerapieConcomitanti(filePathProvider.getTerapieConcomitantiFile(), List.of(paziente));
+    }
+
+    private void setupPatientSelectionListener() {
+        pazientiList.getSelectionModel().selectedItemProperty().addListener((obs, oldP, newP) -> {
+            if (newP != null) {
+                updatePatientViews(newP);
             }
+        });
+    }
+
+    private void updatePatientViews(Paziente paziente) {
+        mostraRilevazioni(paziente);
+        mostraTerapie(paziente);
+        mostraAssunzioni(paziente);
+        mostraSchedaClinica(paziente);
+        mostraEventi(paziente);
+        aggiornaTerapieConcomitanti(paziente);
+    }
+
+    private void selectFirstPatient() {
+        if (!diabetologo.getPazienti().isEmpty()) {
+            pazientiList.getSelectionModel().selectFirst();
         }
-        ObservableList<Terapia> lista = FXCollections.observableArrayList(p.getTerapie());
+    }
+
+    // ---------- Display Methods ----------
+
+    private void mostraRilevazioni(Paziente paziente) {
+        ObservableList<Rilevazione> lista = FXCollections.observableArrayList(paziente.getRilevazioni());
+        lista.sort(Comparator
+                .comparing(Rilevazione::getData).reversed()
+                .thenComparing(r -> ORDINE_PASTI.getOrDefault(r.getTipoPasto(), Integer.MAX_VALUE))
+        );
+        rilevazioniTable.setItems(lista);
+    }
+
+    private String determinaColore(String tipoPasto, int valore) {
+        if (tipoPasto.toLowerCase().contains("prima")) {
+            return determineColorForPreMeal(valore);
+        } else {
+            return determineColorForPostMeal(valore);
+        }
+    }
+
+    private String determineColorForPreMeal(int valore) {
+        if (valore < 80) return "deepskyblue";
+        else if (valore <= 130) return "lightgreen";
+        else if (valore <= 180) return "khaki";
+        else return "orange";
+    }
+
+    private String determineColorForPostMeal(int valore) {
+        if (valore < 180) return "lightgreen";
+        else if (valore <= 250) return "orange";
+        else return "tomato";
+    }
+
+    private void mostraTerapie(Paziente paziente) {
+        updateTerapieStatus(paziente);
+        ObservableList<Terapia> lista = FXCollections.observableArrayList(paziente.getTerapie());
         terapieTable.setItems(lista);
         terapieTable.refresh();
     }
 
-    private void mostraAssunzioni(Paziente p) {
-        ObservableList<Assunzione> lista = FXCollections.observableArrayList(p.getAssunzioni());
+    private void updateTerapieStatus(Paziente paziente) {
+        LocalDate oggi = LocalDate.now();
+        for (Terapia terapia : paziente.getTerapie()) {
+            if (terapia.getStato() == Terapia.Stato.ATTIVA && oggi.isAfter(terapia.getDataFine())) {
+                terapia.setStato(Terapia.Stato.TERMINATA);
+            }
+        }
+    }
+
+    private String getStyleForTerapiaStato(Terapia.Stato stato) {
+        return switch (stato) {
+            case ATTIVA -> "-fx-background-color: lightgreen;";
+            case IN_PAUSA -> "-fx-background-color: orange;";
+            case TERMINATA -> "-fx-background-color: tomato;";
+        };
+    }
+
+    private void mostraAssunzioni(Paziente paziente) {
+        ObservableList<Assunzione> lista = FXCollections.observableArrayList(paziente.getAssunzioni());
         lista.sort(Comparator.comparing(Assunzione::getData)
                 .thenComparing(Assunzione::getOra).reversed());
         assunzioniTable.setItems(lista);
     }
 
-    private void mostraSchedaClinica(Paziente p) {
-        if (p.getSchedaClinica() != null) {
-            fattoriRischioArea.setText(p.getSchedaClinica().getFattoriRischio());
-            patologieArea.setText(p.getSchedaClinica().getPregressePatologie());
-            comorbiditaArea.setText(p.getSchedaClinica().getComorbidita());
+    private void mostraSchedaClinica(Paziente paziente) {
+        if (paziente.getSchedaClinica() != null) {
+            populateSchedaClinicaFields(paziente.getSchedaClinica());
         } else {
-            fattoriRischioArea.clear();
-            patologieArea.clear();
-            comorbiditaArea.clear();
+            clearSchedaClinicaFields();
         }
     }
 
-    private void mostraEventi(Paziente p) {
-        ObservableList<EventoClinico> lista = FXCollections.observableArrayList(p.getEventiClinici());
+    private void populateSchedaClinicaFields(SchedaClinica scheda) {
+        fattoriRischioArea.setText(scheda.getFattoriRischio());
+        patologieArea.setText(scheda.getPregressePatologie());
+        comorbiditaArea.setText(scheda.getComorbidita());
+    }
+
+    private void clearSchedaClinicaFields() {
+        fattoriRischioArea.clear();
+        patologieArea.clear();
+        comorbiditaArea.clear();
+    }
+
+    private void mostraEventi(Paziente paziente) {
+        ObservableList<EventoClinico> lista = FXCollections.observableArrayList(paziente.getEventiClinici());
         lista.sort(Comparator.comparing(EventoClinico::getData).reversed()
                 .thenComparing(e -> e.getOra() != null ? e.getOra() : LocalTime.MIDNIGHT, Comparator.reverseOrder()));
         eventiTable.setItems(lista);
-    }
-
-
-
-    // ---------- Utility ----------
-
-    private void showCustomAlert(String titolo, String messaggio, Alert.AlertType tipo) {
-        Alert alert = new Alert(tipo);
-        alert.setTitle(titolo);
-        alert.setHeaderText(null);
-        alert.setContentText(messaggio);
-        alert.showAndWait();
-    }
-
-    @FXML
-    private void handleLogout() {
-        try {
-            Stage stage = (Stage) welcomeLabel.getScene().getWindow();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("LoginView.fxml"));
-            stage.setScene(new Scene(loader.load()));
-            stage.setTitle("Login - Sistema Diabete");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    // ---------- Metodi Terapie ----------
-    @FXML
-    private void handleAggiungiTerapia() {
-        Paziente selected = pazientiList.getSelectionModel().getSelectedItem();
-        if (selected == null) return;
-
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("TerapiaForm.fxml"));
-            Stage dialogStage = new Stage();
-            dialogStage.setTitle("Nuova Terapia");
-            dialogStage.setScene(new Scene(loader.load()));
-
-            TerapiaFormController controller = loader.getController();
-            controller.setMedicoId(diabetologo.getId());
-
-            dialogStage.showAndWait();
-
-            Terapia nuova = controller.getNuovaTerapia();
-            if (nuova != null) {
-                selected.aggiungiTerapia(nuova);
-                mostraTerapie(selected);
-                dataController.salvaTerapie("src/resources/terapie.csv", List.of(selected));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    private void handleModificaStatoTerapia() {
-        Terapia selected = terapieTable.getSelectionModel().getSelectedItem();
-        Paziente paziente = pazientiList.getSelectionModel().getSelectedItem();
-        if (selected == null || paziente == null) return;
-
-        ChoiceDialog<Terapia.Stato> dialog = new ChoiceDialog<>(selected.getStato(),
-                Terapia.Stato.ATTIVA, Terapia.Stato.IN_PAUSA, Terapia.Stato.TERMINATA);
-        dialog.setTitle("Cambia stato terapia");
-        dialog.setHeaderText(null);
-        dialog.setContentText("Seleziona nuovo stato:");
-        dialog.showAndWait().ifPresent(nuovoStato -> {
-            LocalDate oggi = LocalDate.now();
-            if (oggi.isBefore(selected.getDataInizio()) || oggi.isAfter(selected.getDataFine())) {
-                showCustomAlert("Errore", "Non puoi modificare lo stato fuori dall'intervallo valido!", Alert.AlertType.ERROR);
-            } else {
-                selected.setStato(nuovoStato);
-                dataController.salvaTerapie("src/resources/terapie.csv", List.of(paziente));
-                mostraTerapie(paziente);
-            }
-        });
-    }
-
-    @FXML
-    private void handleSalvaSchedaClinica() {
-        Paziente selected = pazientiList.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            showCustomAlert("Errore", "Seleziona un paziente prima di salvare la scheda.", Alert.AlertType.ERROR);
-            return;
-        }
-
-        SchedaClinica scheda = new SchedaClinica(
-                fattoriRischioArea.getText(),
-                patologieArea.getText(),
-                comorbiditaArea.getText()
-        );
-        selected.setSchedaClinica(scheda);
-
-        dataController.salvaSchedeCliniche(schedeFile, List.of(selected));
-        showCustomAlert("Successo", "Scheda clinica salvata correttamente.", Alert.AlertType.INFORMATION);
     }
 
     private void aggiornaTerapieConcomitanti(Paziente paziente) {
         terapieConcomitantiMedicoList.getItems().setAll(paziente.getTerapieConcomitanti());
     }
 
-    public void mostraNotificaAssunzioniMancanti(Paziente paziente, Terapia terapia) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Assunzioni non registrate");
-        alert.setHeaderText("Attenzione paziente non conforme");
-        alert.setContentText(
-                "Il paziente " + paziente.getNome() + " " + paziente.getCognome() +
-                        " non ha registrato le assunzioni del farmaco \"" + terapia.getFarmaco() +
-                        "\" per 3 giorni consecutivi."
+    // ---------- Event Handlers ----------
+
+    @FXML
+    private void handleLogout() {
+        navigateToLogin(welcomeLabel.getScene().getWindow(), "LoginView.fxml");
+    }
+
+    @FXML
+    private void handleAggiungiTerapia() {
+        Paziente selectedPatient = pazientiList.getSelectionModel().getSelectedItem();
+        if (selectedPatient == null) return;
+
+        try {
+            showTerapiaDialog(selectedPatient);
+        } catch (Exception e) {
+            handleException("Errore nell'apertura del form terapia", e);
+        }
+    }
+
+    private void showTerapiaDialog(Paziente paziente) throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("TerapiaForm.fxml"));
+        Stage dialogStage = new Stage();
+        dialogStage.setTitle("Nuova Terapia");
+        dialogStage.setScene(new Scene(loader.load()));
+
+        TerapiaFormController controller = loader.getController();
+        controller.setMedicoId(diabetologo.getId());
+
+        dialogStage.showAndWait();
+
+        Terapia nuovaTerapia = controller.getNuovaTerapia();
+        if (nuovaTerapia != null) {
+            paziente.aggiungiTerapia(nuovaTerapia);
+            mostraTerapie(paziente);
+            dataController.salvaTerapie(filePathProvider.getTerapieFile(), List.of(paziente));
+        }
+    }
+
+    @FXML
+    private void handleModificaStatoTerapia() {
+        Terapia selectedTerapia = terapieTable.getSelectionModel().getSelectedItem();
+        Paziente selectedPaziente = pazientiList.getSelectionModel().getSelectedItem();
+
+        if (selectedTerapia == null || selectedPaziente == null) return;
+
+        showStatoTerapiaDialog(selectedTerapia, selectedPaziente);
+    }
+
+    private void showStatoTerapiaDialog(Terapia terapia, Paziente paziente) {
+        ChoiceDialog<Terapia.Stato> dialog = new ChoiceDialog<>(terapia.getStato(),
+                Terapia.Stato.ATTIVA, Terapia.Stato.IN_PAUSA, Terapia.Stato.TERMINATA);
+        dialog.setTitle("Cambia stato terapia");
+        dialog.setHeaderText(null);
+        dialog.setContentText("Seleziona nuovo stato:");
+
+        dialog.showAndWait().ifPresent(nuovoStato -> {
+            if (isValidStatusChange(terapia)) {
+                updateTerapiaStatus(terapia, nuovoStato, paziente);
+            } else {
+                showAlert("Errore", "Non puoi modificare lo stato fuori dall'intervallo valido!", Alert.AlertType.ERROR);
+            }
+        });
+    }
+
+    private boolean isValidStatusChange(Terapia terapia) {
+        LocalDate oggi = LocalDate.now();
+        return !oggi.isBefore(terapia.getDataInizio()) && !oggi.isAfter(terapia.getDataFine());
+    }
+
+    private void updateTerapiaStatus(Terapia terapia, Terapia.Stato nuovoStato, Paziente paziente) {
+        terapia.setStato(nuovoStato);
+        dataController.salvaTerapie(filePathProvider.getTerapieFile(), List.of(paziente));
+        mostraTerapie(paziente);
+    }
+
+    @FXML
+    private void handleSalvaSchedaClinica() {
+        Paziente selectedPaziente = pazientiList.getSelectionModel().getSelectedItem();
+        if (selectedPaziente == null) {
+            showAlert("Errore", "Seleziona un paziente prima di salvare la scheda.", Alert.AlertType.ERROR);
+            return;
+        }
+
+        SchedaClinica scheda = createSchedaClinica();
+        selectedPaziente.setSchedaClinica(scheda);
+
+        dataController.salvaSchedeCliniche(filePathProvider.getSchedeFile(), List.of(selectedPaziente));
+        showAlert("Successo", "Scheda clinica salvata correttamente.", Alert.AlertType.INFORMATION);
+    }
+
+    private SchedaClinica createSchedaClinica() {
+        return new SchedaClinica(
+                fattoriRischioArea.getText(),
+                patologieArea.getText(),
+                comorbiditaArea.getText()
         );
-        alert.showAndWait();
+    }
+
+    // ---------- Notification Methods ----------
+
+    public void mostraNotificaAssunzioniMancanti(Paziente paziente, Terapia terapia) {
+        String message = String.format(
+                "Il paziente %s %s non ha registrato le assunzioni del farmaco \"%s\" per 3 giorni consecutivi.",
+                paziente.getNome(), paziente.getCognome(), terapia.getFarmaco()
+        );
+        showNotificationAlert("Assunzioni non registrate", "Attenzione paziente non conforme", message, Alert.AlertType.WARNING);
     }
 
     public void mostraNotificaGlicemiaFuoriRange(Paziente paziente, Rilevazione rilevazione) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Glicemia fuori range");
-        alert.setHeaderText("Attenzione: glicemia anomala");
-        alert.setContentText(
-                "Il paziente " + paziente.getNome() + " " + paziente.getCognome() +
-                        " ha registrato un valore di glicemia " + rilevazione.getValore() +
-                        " mg/dL (" + rilevazione.getTipoPasto() + ") il " + rilevazione.getData() + "."
+        String message = String.format(
+                "Il paziente %s %s ha registrato un valore di glicemia %d mg/dL (%s) il %s.",
+                paziente.getNome(), paziente.getCognome(), rilevazione.getValore(),
+                rilevazione.getTipoPasto(), rilevazione.getData()
         );
-        alert.showAndWait();
+        showNotificationAlert("Glicemia fuori range", "Attenzione: glicemia anomala", message, Alert.AlertType.ERROR);
     }
 
     public void mostraNotifichePendenti() {
-        // Assunzioni mancanti
-        for (String msg : AppState.getInstance().prelevaNotificheAssunzioni()) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Assunzioni non registrate");
-            alert.setHeaderText(null);
-            alert.setContentText(msg);
-            alert.showAndWait();
-        }
+        showPendingAssunzioniNotifications();
+        showPendingGlicemiaNotifications();
+    }
 
-        // Glicemia fuori range
-        for (String msg : AppState.getInstance().prelevaNotificheGlicemia()) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Glicemia fuori range");
-            alert.setHeaderText(null);
-            alert.setContentText(msg);
-            alert.showAndWait();
+    private void showPendingAssunzioniNotifications() {
+        for (String msg : AppState.getInstance().prelevaNotificheAssunzioni()) {
+            showNotificationAlert("Assunzioni non registrate", null, msg, Alert.AlertType.WARNING);
         }
     }
 
+    private void showPendingGlicemiaNotifications() {
+        for (String msg : AppState.getInstance().prelevaNotificheGlicemia()) {
+            showNotificationAlert("Glicemia fuori range", null, msg, Alert.AlertType.ERROR);
+        }
+    }
 
+    private void showNotificationAlert(String title, String header, String message, Alert.AlertType type) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    // ---------- Page Navigation ----------
 
     @FXML
     private void mostraPagina1() {
-        pagina1.setVisible(true);
-        pagina1.setManaged(true);
-        pagina2.setVisible(false);
-        pagina2.setManaged(false);
+        showPage(pagina1, pagina2);
     }
 
     @FXML
     private void mostraPagina2() {
-        pagina2.setVisible(true);
-        pagina2.setManaged(true);
-        pagina1.setVisible(false);
-        pagina1.setManaged(false);
+        showPage(pagina2, pagina1);
+    }
+
+    private void showPage(VBox pageToShow, VBox pageToHide) {
+        pageToShow.setVisible(true);
+        pageToShow.setManaged(true);
+        pageToHide.setVisible(false);
+        pageToHide.setManaged(false);
     }
 }

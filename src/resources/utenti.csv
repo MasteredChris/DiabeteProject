@@ -5,5 +5,6 @@ id,type,nome,cognome,email,password,medicoId
 4,Paziente,Carlo,Neri,carlo@esempio.com,1111,5
 5,Diabetologo,Simona,Gialli,dottore2@esempio.com,abcd,
 6,Paziente,Sabrina,Dalla Valle,sabrinadallav@gmail.com,123sas,7
-7,Diabetologo,Christian,Dalla Valle,cridv2004@gmail.com,1234,
+7,Diabetologo,Christian,Dalla Valle,chris@gmail.com,1234,
 8,Paziente,Andrea,Trestini,andrea@gmail.com,1234,7
+9,Paziente,Noemi,Dal Grande,noemi@gmail.com,1111,7

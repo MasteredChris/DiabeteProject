@@ -1,5 +1,14 @@
 pazienteId,tipo,descrizione,data,ora,note
-4,Sintomo,cacarella,2025-09-09,17:42,
-4,Patologia,dsfd,2025-09-09,17:42,dsfsd
 1,Patologia,w432,2025-09-09,18:31:01.525354700,ewfwe
 1,Patologia,sdfvsdf,2025-09-09,18:31:16.420843400,dfgdfg
+3,Patologia,gddf,2025-09-10,17:45:33.129615600,fdgfd
+9,Sintomo,mal di testa,2025-09-10,18:12:14.561133600,molto forte
+9,Sintomo,febbre,2025-09-10,18:12:29.001821300,39,5
+4,Sintomo,cacarella,2025-09-09,17:42,
+4,Patologia,dsfd,2025-09-09,17:42,dsfsd
+4,Patologia,dfgf,2025-09-10,17:25,dfg
+4,Sintomo,ewr,2025-09-10,18:22,esfse
+4,Sintomo,qqq,2025-09-10,18:22,qqq
+4,Sintomo,sdfsdds,2025-09-10,18:24,dfsdfsd
+4,Sintomo,sddfs,2025-09-10,18:43,fdsfds
+4,Sintomo,dfsd,2025-09-10,18:46,dsfsd
