@@ -40,8 +40,16 @@ public class LoginViewController {
                 }
 
                 Scene scene = new Scene(loader.load());
+
                 stage.setScene(scene);
                 stage.setTitle("Dashboard " + utente.getType());
+
+                // Massimizza la finestra basandosi sullo schermo
+                javafx.geometry.Rectangle2D screenBounds = javafx.stage.Screen.getPrimary().getVisualBounds();
+                stage.setX(screenBounds.getMinX());
+                stage.setY(screenBounds.getMinY());
+                stage.setWidth(screenBounds.getWidth());
+                stage.setHeight(screenBounds.getHeight());
 
                 // Passo l'utente al controller giusto
                 if (utente instanceof Paziente) {
@@ -61,4 +69,5 @@ public class LoginViewController {
             messageLabel.setStyle("-fx-text-fill: red;");
         }
     }
+
 }

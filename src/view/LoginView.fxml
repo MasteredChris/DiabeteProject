@@ -6,27 +6,37 @@
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="view.LoginViewController"
-            prefHeight="400" prefWidth="400"
+            prefHeight="600" prefWidth="800"
             style="-fx-background-color: linear-gradient(to bottom right, #E3F2FD, #BBDEFB);">
 
     <children>
-        <VBox spacing="20" alignment="CENTER" AnchorPane.topAnchor="40" AnchorPane.leftAnchor="40"
-              AnchorPane.rightAnchor="40" AnchorPane.bottomAnchor="40"
-              style="-fx-background-color: rgba(255,255,255,0.8); -fx-padding: 30; -fx-background-radius: 15;">
+        <StackPane AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+                   AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+            <!-- VBox con dimensioni fisse, non si espande -->
+            <VBox spacing="20" alignment="CENTER"
+                  maxWidth="350" maxHeight="300"
+                  style="-fx-background-color: rgba(255,255,255,0.85); -fx-padding: 30; -fx-background-radius: 15;">
 
-            <Label text="Sistema Diabete" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1565C0;" />
+                <Label text="Sistema Diabete" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1565C0;" />
 
-            <TextField fx:id="emailField" promptText="Email" maxWidth="250"
-                       style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #90CAF9; -fx-padding: 5;"/>
-
-            <PasswordField fx:id="passwordField" promptText="Password" maxWidth="250"
+                <TextField fx:id="emailField" promptText="Email" maxWidth="250"
                            style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #90CAF9; -fx-padding: 5;"/>
 
-            <Button text="Accedi" onAction="#handleLogin" maxWidth="150"
-                    style="-fx-background-color: #1565C0; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10;" />
+                <PasswordField fx:id="passwordField" promptText="Password" maxWidth="250"
+                               style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #90CAF9; -fx-padding: 5;"/>
 
-            <Label fx:id="messageLabel" textFill="red" style="-fx-font-size: 12px;"/>
+                <Button text="Accedi" onAction="#handleLogin" maxWidth="150"
+                        style="-fx-background-color: #1565C0; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10;" />
 
-        </VBox>
+                <Label fx:id="messageLabel" textFill="red" style="-fx-font-size: 12px;"/>
+
+            </VBox>
+        </StackPane>
     </children>
 </AnchorPane>
+
+
+
+
+
+

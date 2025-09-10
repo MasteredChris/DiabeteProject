@@ -10,6 +10,8 @@ import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxTableCell;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
 import model.*;
@@ -61,6 +63,9 @@ public class DiabetologoDashboardController {
     @FXML private TableColumn<EventoClinico, String> dataEventoColumn;
     @FXML private TableColumn<EventoClinico, String> oraEventoColumn;
     @FXML private TableColumn<EventoClinico, String> noteEventoColumn;
+
+    @FXML private VBox pagina1;
+    @FXML private VBox pagina2;
 
     private String schedeFile = "src/resources/schede_cliniche.csv";
 
@@ -353,5 +358,21 @@ public class DiabetologoDashboardController {
 
         dataController.salvaSchedeCliniche(schedeFile, List.of(selected));
         showCustomAlert("Successo", "Scheda clinica salvata correttamente.", Alert.AlertType.INFORMATION);
+    }
+
+    @FXML
+    private void mostraPagina1() {
+        pagina1.setVisible(true);
+        pagina1.setManaged(true);
+        pagina2.setVisible(false);
+        pagina2.setManaged(false);
+    }
+
+    @FXML
+    private void mostraPagina2() {
+        pagina2.setVisible(true);
+        pagina2.setManaged(true);
+        pagina1.setVisible(false);
+        pagina1.setManaged(false);
     }
 }

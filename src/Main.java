@@ -12,6 +12,7 @@ public class Main extends Application {
 
         stage.setTitle("Login - Sistema Diabete");
         stage.setScene(scene);
+        stage.setMaximized(true);
         stage.show();
     }
 

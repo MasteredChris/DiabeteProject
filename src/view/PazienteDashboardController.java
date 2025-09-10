@@ -9,6 +9,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
 import model.*;
@@ -60,7 +61,8 @@ public class PazienteDashboardController {
     @FXML private TextField descrizioneEventoField;
     @FXML private TextField noteEventoField;
 
-    private final String eventiFile = "src/resources/eventi_clinici.csv";
+    @FXML private HBox pagina1;
+    @FXML private HBox pagina2;
 
 
     private Paziente paziente;
@@ -69,6 +71,7 @@ public class PazienteDashboardController {
     private final String terapieFile = "src/resources/terapie.csv";
     private final String assunzioniFile = "src/resources/assunzioni.csv";
     private final String eventiCliniciFile = "src/resources/eventi_clinici.csv";
+    private final String eventiFile = "src/resources/eventi_clinici.csv";
 
     @FXML
     public void initialize() {
@@ -373,6 +376,22 @@ public class PazienteDashboardController {
         ObservableList<EventoClinico> lista = FXCollections.observableArrayList(paziente.getEventiClinici());
         lista.sort(Comparator.comparing(EventoClinico::getData).thenComparing(EventoClinico::getOra).reversed());
         eventiTable.setItems(lista);
+    }
+
+    @FXML
+    private void mostraPagina1() {
+        pagina1.setVisible(true);
+        pagina1.setManaged(true);
+        pagina2.setVisible(false);
+        pagina2.setManaged(false);
+    }
+
+    @FXML
+    private void mostraPagina2() {
+        pagina2.setVisible(true);
+        pagina2.setManaged(true);
+        pagina1.setVisible(false);
+        pagina1.setManaged(false);
     }
 
 }
