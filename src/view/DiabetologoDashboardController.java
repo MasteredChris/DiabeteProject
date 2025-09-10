@@ -82,6 +82,9 @@ public class DiabetologoDashboardController {
 
     @FXML
     public void initialize() {
+
+        AppState.getInstance().setDiabetologoDashboardController(this);
+
         // ---------- Colonne Rilevazioni ----------
         dataColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getData().toString()));
         tipoPastoColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getTipoPasto()));
@@ -143,10 +146,12 @@ public class DiabetologoDashboardController {
     }
 
     public void setUtente(Diabetologo diabetologo) {
+        AppState.getInstance().setDiabetologoDashboardController(this);
+
         this.diabetologo = diabetologo;
         welcomeLabel.setText("Benvenuto Dr. " + diabetologo.getNome() + " " + diabetologo.getCognome());
         pazientiList.setItems(FXCollections.observableArrayList(diabetologo.getPazienti()));
-
+        mostraNotifichePendenti();
         // Carica tutti i dati dei pazienti incluso le terapie concomitanti
         for (Paziente p : diabetologo.getPazienti()) {
             p.getRilevazioni().clear();
@@ -364,6 +369,52 @@ public class DiabetologoDashboardController {
     private void aggiornaTerapieConcomitanti(Paziente paziente) {
         terapieConcomitantiMedicoList.getItems().setAll(paziente.getTerapieConcomitanti());
     }
+
+    public void mostraNotificaAssunzioniMancanti(Paziente paziente, Terapia terapia) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Assunzioni non registrate");
+        alert.setHeaderText("Attenzione paziente non conforme");
+        alert.setContentText(
+                "Il paziente " + paziente.getNome() + " " + paziente.getCognome() +
+                        " non ha registrato le assunzioni del farmaco \"" + terapia.getFarmaco() +
+                        "\" per 3 giorni consecutivi."
+        );
+        alert.showAndWait();
+    }
+
+    public void mostraNotificaGlicemiaFuoriRange(Paziente paziente, Rilevazione rilevazione) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Glicemia fuori range");
+        alert.setHeaderText("Attenzione: glicemia anomala");
+        alert.setContentText(
+                "Il paziente " + paziente.getNome() + " " + paziente.getCognome() +
+                        " ha registrato un valore di glicemia " + rilevazione.getValore() +
+                        " mg/dL (" + rilevazione.getTipoPasto() + ") il " + rilevazione.getData() + "."
+        );
+        alert.showAndWait();
+    }
+
+    public void mostraNotifichePendenti() {
+        // Assunzioni mancanti
+        for (String msg : AppState.getInstance().prelevaNotificheAssunzioni()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Assunzioni non registrate");
+            alert.setHeaderText(null);
+            alert.setContentText(msg);
+            alert.showAndWait();
+        }
+
+        // Glicemia fuori range
+        for (String msg : AppState.getInstance().prelevaNotificheGlicemia()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Glicemia fuori range");
+            alert.setHeaderText(null);
+            alert.setContentText(msg);
+            alert.showAndWait();
+        }
+    }
+
+
 
     @FXML
     private void mostraPagina1() {

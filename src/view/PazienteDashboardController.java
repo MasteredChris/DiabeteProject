@@ -152,6 +152,7 @@ public class PazienteDashboardController {
         paziente.getAssunzioni().clear();
         dataController.caricaAssunzioni(assunzioniFile, List.of(paziente));
         aggiornaListaAssunzioni();
+        controllaAssunzioni(paziente);
 
         // Aggiorna lista farmaci
         aggiornaFarmaciChoice();
@@ -165,6 +166,7 @@ public class PazienteDashboardController {
         paziente.getTerapieConcomitanti().clear();
         dataController.caricaTerapieConcomitanti(terapieConcomitantiFile, List.of(paziente));
         aggiornaListaTerapieConcomitanti();
+
     }
 
     private void aggiornaListaTerapieConcomitanti() {
@@ -188,18 +190,40 @@ public class PazienteDashboardController {
 
         try {
             int valore = Integer.parseInt(valoreStr);
+
+            // Controllo duplicati
+            boolean duplicato = paziente.getRilevazioni().stream()
+                    .anyMatch(r -> r.getData().equals(data) && r.getTipoPasto().equalsIgnoreCase(tipoPasto));
+            if (duplicato) {
+                showAlert("Errore", "Esiste già una rilevazione per questa data e tipo pasto.");
+                return;
+            }
+
             Rilevazione r = new Rilevazione(data, tipoPasto, valore);
             paziente.aggiungiRilevazione(r);
 
+            // Salvataggio su file
             dataController.salvaRilevazioni(rilevazioniFile, List.of(paziente));
             aggiornaListaRilevazioni();
             valoreField.clear();
+
+            // Controllo fuori range e notifica medico
+            if (r.isFuoriRange()) {
+                String msg = "Il paziente " + paziente.getNome() + " " + paziente.getCognome() +
+                        " ha registrato un valore di glicemia " + r.getValore() +
+                        " mg/dL (" + r.getTipoPasto() + ") il " + r.getData() + ".";
+                AppState.getInstance().aggiungiNotificaGlicemia(msg);
+            }
+
+
         } catch (NumberFormatException e) {
             showAlert("Errore", "Inserisci un numero valido");
         } catch (IllegalArgumentException e) {
             showAlert("Errore", e.getMessage());
         }
     }
+
+
 
     @FXML
     private void handleEliminaRilevazione() {
@@ -282,6 +306,7 @@ public class PazienteDashboardController {
 
             oraField.clear();
             quantitaField.clear();
+            controllaAssunzioni(paziente);
         } catch (Exception e) {
             showAlert("Errore", "Formato non corretto per ora o quantità.");
         }
@@ -442,6 +467,81 @@ public class PazienteDashboardController {
             dataController.salvaTerapieConcomitanti(terapieConcomitantiFile, List.of(paziente));
             aggiornaListaTerapieConcomitanti();
         }
+    }
+
+
+
+    public void controllaAssunzioni(Paziente paziente) {
+        LocalDate oggi = LocalDate.now();
+
+        for (Terapia terapia : paziente.getTerapie()) {
+            if (terapia.getStato() != Terapia.Stato.ATTIVA) continue;
+
+            LocalDate inizio = terapia.getDataInizio();
+            LocalDate fine = terapia.getDataFine();
+
+            //  Controllo di oggi per avvisare subito il paziente
+            long assunzioniOggi = paziente.getAssunzioni().stream()
+                    .filter(a -> a.getFarmaco().equals(terapia.getFarmaco()))
+                    .filter(a -> a.getData().equals(oggi))
+                    .count();
+
+            if (assunzioniOggi < terapia.getAssunzioniGiornaliere()) {
+                mostraAlertPaziente(terapia, assunzioniOggi);
+            }
+
+            // Controllo ultimi 3 giorni per il medico
+            boolean treGiorniMancanti = true;
+            for (int i = 1; i <= 3; i++) { // controlliamo ieri, due giorni fa, tre giorni fa
+                LocalDate giorno = oggi.minusDays(i);
+
+                // Considera solo giorni dentro il range della terapia
+                if (giorno.isBefore(inizio) || giorno.isAfter(fine)) {
+                    treGiorniMancanti = false;
+                    break;
+                }
+
+                long assunzioniGiorno = paziente.getAssunzioni().stream()
+                        .filter(a -> a.getFarmaco().equals(terapia.getFarmaco()))
+                        .filter(a -> a.getData().equals(giorno))
+                        .count();
+
+                if (assunzioniGiorno >= terapia.getAssunzioniGiornaliere()) {
+                    treGiorniMancanti = false;
+                    break; // basta un giorno registrato correttamente
+                }
+            }
+
+            // Se i 3 giorni consecutivi sono mancanti, notifica il medico oggi (quarto giorno)
+            if (treGiorniMancanti) {
+                notificaMedico(paziente, terapia);
+            }
+        }
+    }
+
+
+
+    private void mostraAlertPaziente(Terapia terapia, long assunzioniRegistrate) {
+        int mancanti = terapia.getAssunzioniGiornaliere() - (int) assunzioniRegistrate;
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Assunzioni incomplete");
+        alert.setHeaderText(null);
+        alert.setContentText("Devi ancora registrare " + mancanti + " assunzione(i) per il farmaco: " + terapia.getFarmaco());
+        alert.showAndWait();
+    }
+
+    private void notificaMedico(Paziente paziente, Terapia terapia) {
+        String msg = "Il paziente " + paziente.getNome() + " " + paziente.getCognome() +
+                " non ha registrato le assunzioni del farmaco \"" + terapia.getFarmaco() +
+                "\" per 3 giorni consecutivi.";
+        AppState.getInstance().aggiungiNotificaAssunzione(msg);
+    }
+
+    private void notificaGlicemia(Paziente paziente, Rilevazione r) {
+        String msg = "Il paziente " + paziente.getNome() + " " + paziente.getCognome() +
+                " ha registrato un valore di glicemia " + r.getValore() +
+                " mg/dL (" + r.getTipoPasto() + ") il " + r.getData() + ".";
+        AppState.getInstance().aggiungiNotificaGlicemia(msg);
     }
 
 

@@ -12,6 +12,7 @@ public class Terapia {
     private LocalDate dataFine;
     private int medicoId;
 
+
     public enum Stato { ATTIVA, IN_PAUSA, TERMINATA }
     private Stato stato;
 
@@ -75,6 +76,7 @@ public class Terapia {
         aggiornaStatoAutomatico();
         return stato == Stato.ATTIVA;
     }
+
 
     @Override
     public String toString() {

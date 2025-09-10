@@ -49,19 +49,14 @@ public class Rilevazione {
 
     // --- Logica per determinare se il valore è fuori range ---
     private boolean calcolaFuoriRange() {
-        switch(tipoPasto.toLowerCase()) {
-            case "prima colazione":
-            case "prima pranzo":
-            case "prima cena":
-                return valore < 80 || valore > 130;
-            case "dopo colazione":
-            case "dopo pranzo":
-            case "dopo cena":
-                return valore > 180;
-            default:
-                return false;
+        if (tipoPasto.toLowerCase().contains("prima")) {
+            return valore < 80 || valore > 130;
+        } else if (tipoPasto.toLowerCase().contains("dopo")) {
+            return valore > 130; // invece di 180
         }
+        return false;
     }
+
 
     @Override
     public String toString() {
