@@ -1,0 +1,32 @@
+<component name="libraryTable">
+  <library name="v5.19.0 source code">
+    <CLASSES />
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/Downloads/v5.19.0 source code.zip!/" />
+      <root url="jar://$USER_HOME$/Downloads/v5.19.0 source code.zip!/mockito-mockito-144751b/mockito-core/src/main/java" />
+      <root url="jar://$USER_HOME$/Downloads/v5.19.0 source code.zip!/mockito-mockito-144751b/mockito-core/src/testFixtures/java" />
+      <root url="jar://$USER_HOME$/Downloads/v5.19.0 source code.zip!/mockito-mockito-144751b/mockito-core/src/test/java" />
+      <root url="jar://$USER_HOME$/Downloads/v5.19.0 source code.zip!/mockito-mockito-144751b/mockito-extensions/mockito-android/src/main/java" />
+      <root url="jar://$USER_HOME$/Downloads/v5.19.0 source code.zip!/mockito-mockito-144751b/mockito-extensions/mockito-errorprone/src/main/java" />
+      <root url="jar://$USER_HOME$/Downloads/v5.19.0 source code.zip!/mockito-mockito-144751b/mockito-extensions/mockito-errorprone/src/test/java" />
+      <root url="jar://$USER_HOME$/Downloads/v5.19.0 source code.zip!/mockito-mockito-144751b/mockito-extensions/mockito-junit-jupiter/src/main/java" />
+      <root url="jar://$USER_HOME$/Downloads/v5.19.0 source code.zip!/mockito-mockito-144751b/mockito-extensions/mockito-junit-jupiter/src/test/java" />
+      <root url="jar://$USER_HOME$/Downloads/v5.19.0 source code.zip!/mockito-mockito-144751b/mockito-extensions/mockito-proxy/src/test/java" />
+      <root url="jar://$USER_HOME$/Downloads/v5.19.0 source code.zip!/mockito-mockito-144751b/mockito-extensions/mockito-subclass/src/test/java" />
+      <root url="jar://$USER_HOME$/Downloads/v5.19.0 source code.zip!/mockito-mockito-144751b/mockito-integration-tests/extensions-tests/src/test/java" />
+      <root url="jar://$USER_HOME$/Downloads/v5.19.0 source code.zip!/mockito-mockito-144751b/mockito-integration-tests/inline-mocks-tests/src/test/java" />
+      <root url="jar://$USER_HOME$/Downloads/v5.19.0 source code.zip!/mockito-mockito-144751b/mockito-integration-tests/java-21-tests/src/test/java" />
+      <root url="jar://$USER_HOME$/Downloads/v5.19.0 source code.zip!/mockito-mockito-144751b/mockito-integration-tests/junit-jupiter-extension-tests/src/test/java" />
+      <root url="jar://$USER_HOME$/Downloads/v5.19.0 source code.zip!/mockito-mockito-144751b/mockito-integration-tests/junit-jupiter-inline-mock-maker-extension-tests/src/test/java" />
+      <root url="jar://$USER_HOME$/Downloads/v5.19.0 source code.zip!/mockito-mockito-144751b/mockito-integration-tests/junit-jupiter-parallel-tests/src/test/java" />
+      <root url="jar://$USER_HOME$/Downloads/v5.19.0 source code.zip!/mockito-mockito-144751b/mockito-integration-tests/memory-tests/src/test/java" />
+      <root url="jar://$USER_HOME$/Downloads/v5.19.0 source code.zip!/mockito-mockito-144751b/mockito-integration-tests/module-named-tests/src/test/java" />
+      <root url="jar://$USER_HOME$/Downloads/v5.19.0 source code.zip!/mockito-mockito-144751b/mockito-integration-tests/module-tests/src/test/java" />
+      <root url="jar://$USER_HOME$/Downloads/v5.19.0 source code.zip!/mockito-mockito-144751b/mockito-integration-tests/osgi-tests/src/otherBundle/java" />
+      <root url="jar://$USER_HOME$/Downloads/v5.19.0 source code.zip!/mockito-mockito-144751b/mockito-integration-tests/osgi-tests/src/testBundle/java" />
+      <root url="jar://$USER_HOME$/Downloads/v5.19.0 source code.zip!/mockito-mockito-144751b/mockito-integration-tests/osgi-tests/src/test/java" />
+      <root url="jar://$USER_HOME$/Downloads/v5.19.0 source code.zip!/mockito-mockito-144751b/mockito-integration-tests/programmatic-tests/src/test/java" />
+    </SOURCES>
+  </library>
+</component>

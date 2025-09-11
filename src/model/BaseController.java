@@ -27,7 +27,7 @@ public abstract class BaseController {
     /**
      * Shows an error alert with the given title and message.
      */
-    protected void showAlert(String title, String message) {
+    public void showAlert(String title, String message) {
         showAlert(title, message, Alert.AlertType.ERROR);
     }
 
