@@ -1,6 +1,5 @@
-package view;
+package controller;
 
-import controller.DataController;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -312,7 +311,7 @@ public class DiabetologoDashboardController extends BaseController {
 
     @FXML
     private void handleLogout() {
-        navigateToLogin(welcomeLabel.getScene().getWindow(), "LoginView.fxml");
+        navigateToLogin(welcomeLabel.getScene().getWindow(), "/view/LoginView.fxml");
     }
 
     @FXML
@@ -328,7 +327,7 @@ public class DiabetologoDashboardController extends BaseController {
     }
 
     private void showTerapiaDialog(Paziente paziente) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("TerapiaForm.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/TerapiaForm.fxml"));
         Stage dialogStage = new Stage();
         dialogStage.setTitle("Nuova Terapia");
         dialogStage.setScene(new Scene(loader.load()));
@@ -470,4 +469,5 @@ public class DiabetologoDashboardController extends BaseController {
         pageToHide.setVisible(false);
         pageToHide.setManaged(false);
     }
+
 }

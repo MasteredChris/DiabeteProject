@@ -1,6 +1,5 @@
-package view;
+package controller;
 
-import controller.DataController;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -653,7 +652,7 @@ public class PazienteDashboardController extends BaseController {
 
     @FXML
     private void handleLogout() {
-        navigateToLogin(welcomeLabel.getScene().getWindow(), "LoginView.fxml");
+        navigateToLogin(welcomeLabel.getScene().getWindow(), "/view/LoginView.fxml");
     }
 
     @FXML
@@ -666,7 +665,7 @@ public class PazienteDashboardController extends BaseController {
     }
 
     private void showContactDoctorDialog() throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("ContattaMedico.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ContattaMedico.fxml"));
         Stage stage = new Stage();
         stage.setScene(new javafx.scene.Scene(loader.load()));
         stage.setTitle("Contatta Medico");

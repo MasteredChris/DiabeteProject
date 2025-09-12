@@ -2,7 +2,7 @@ import model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
-import view.DiabetologoDashboardController;
+import controller.DiabetologoDashboardController;
 
 import static org.junit.jupiter.api.Assertions.*;
 

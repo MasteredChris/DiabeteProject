@@ -1,6 +1,5 @@
-package view;
+package controller;
 
-import controller.LoginController;
 import model.*;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -26,8 +25,8 @@ public class LoginViewController {
     // Costanti per la configurazione
     private static final String ERROR_STYLE = "-fx-text-fill: red;";
     private static final String INFO_STYLE = "-fx-text-fill: blue;";
-    private static final String PAZIENTE_DASHBOARD_FXML = "PazienteDashboard.fxml";
-    private static final String DIABETOLOGO_DASHBOARD_FXML = "DiabetologoDashboard.fxml";
+    private static final String PAZIENTE_DASHBOARD_FXML = "/view/PazienteDashboard.fxml";
+    private static final String DIABETOLOGO_DASHBOARD_FXML = "/view/DiabetologoDashboard.fxml";
     private static final String DASHBOARD_TITLE_PREFIX = "Dashboard ";
 
     // Componenti FXML

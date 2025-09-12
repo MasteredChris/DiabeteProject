@@ -2,7 +2,7 @@ import model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
-import view.PazienteDashboardController;
+import controller.PazienteDashboardController;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

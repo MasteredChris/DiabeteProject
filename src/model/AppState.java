@@ -1,6 +1,6 @@
 package model;
 
-import view.DiabetologoDashboardController;
+import controller.DiabetologoDashboardController;
 
 import java.util.ArrayList;
 import java.util.HashMap;

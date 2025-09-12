@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="view.LoginViewController"
+            fx:controller="controller.LoginViewController"
             prefHeight="600" prefWidth="800"
             style="-fx-background-color: linear-gradient(to bottom right, #E3F2FD, #BBDEFB);">
 

@@ -6,7 +6,7 @@
 
 <VBox xmlns="http://javafx.com/javafx/20"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="view.ContattaMedicoController"
+      fx:controller="controller.ContattaMedicoController"
       spacing="15" alignment="CENTER"
       style="-fx-background-color: #f7f9fc; -fx-padding: 20; -fx-border-radius: 10; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);">
 
