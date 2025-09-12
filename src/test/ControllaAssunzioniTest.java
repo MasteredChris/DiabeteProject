@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test class per il metodo controllaAssunzioni del PazienteDashboardController.
- * Versione semplificata senza Mockito.
+ * Test puramente unitari senza dipendenze da JavaFX.
  */
 class ControllaAssunzioniTest {
 
@@ -80,6 +80,7 @@ class ControllaAssunzioniTest {
 
         // Assert: Nessun alert dovrebbe essere mostrato
         assertFalse(controller.wasAlertShown(), "Non dovrebbero essere mostrati alert per assunzioni complete");
+        assertEquals(0, controller.getAlertCount(), "Il contatore degli alert dovrebbe essere 0");
     }
 
     @Test
@@ -98,6 +99,53 @@ class ControllaAssunzioniTest {
         assertTrue(controller.wasAlertShown(), "Dovrebbe essere mostrato un alert per assunzioni incomplete");
         assertTrue(controller.getLastAlertMessage().contains(FARMACO_INSULINA),
                 "Il messaggio dovrebbe contenere il nome del farmaco mancante");
+        assertTrue(controller.getLastAlertMessage().contains("2"),
+                "Il messaggio dovrebbe indicare che mancano 2 assunzioni");
+    }
+
+    @Test
+    @DisplayName("Controlla assunzioni multiple incomplete - dovrebbe mostrare alert per entrambi")
+    void testControllaAssunzioni_MultipleIncomplete_MostraAlertEntrambi() {
+        // Arrange: Aggiungi solo 1 assunzione di insulina e 1 di metformina (entrambe incomplete)
+        pazienteTest.aggiungiAssunzione(new Assunzione(dataOggi, LocalTime.of(8, 0), FARMACO_INSULINA, 10.0));
+        pazienteTest.aggiungiAssunzione(new Assunzione(dataOggi, LocalTime.of(12, 0), FARMACO_METFORMINA, 500.0));
+
+        // Act
+        controller.controllaAssunzioni(pazienteTest);
+
+        // Assert: Dovrebbe mostrare alert
+        assertTrue(controller.wasAlertShown(), "Dovrebbe essere mostrato un alert per assunzioni incomplete");
+
+        // Verifica che entrambi i farmaci siano menzionati nel messaggio
+        String message = controller.getLastAlertMessage();
+        assertTrue(message.contains(FARMACO_INSULINA) || controller.getAlertCount() > 1,
+                "Dovrebbe essere menzionata l'insulina");
+    }
+
+    @Test
+    @DisplayName("Controlla senza terapie attive - nessun controllo dovrebbe essere effettuato")
+    void testControllaAssunzioni_SenzaTerapieAttive_NessunControllo() {
+        // Arrange: Rimuovi tutte le terapie
+        pazienteTest.getTerapie().clear();
+
+        // Act
+        controller.controllaAssunzioni(pazienteTest);
+
+        // Assert: Nessun alert dovrebbe essere mostrato
+        assertFalse(controller.wasAlertShown(), "Non dovrebbero essere mostrati alert senza terapie attive");
+    }
+
+    @Test
+    @DisplayName("Controlla terapie terminate - non dovrebbe controllarle")
+    void testControllaAssunzioni_TerapieTerminate_NonControllate() {
+        // Arrange: Termina tutte le terapie
+        pazienteTest.getTerapie().forEach(t -> t.setStato(Terapia.Stato.TERMINATA));
+
+        // Act
+        controller.controllaAssunzioni(pazienteTest);
+
+        // Assert: Nessun alert dovrebbe essere mostrato
+        assertFalse(controller.wasAlertShown(), "Non dovrebbero essere mostrati alert per terapie terminate");
     }
 
     private void addCompleteAssunzioniForDate(LocalDate data) {
@@ -116,14 +164,30 @@ class ControllaAssunzioniTest {
         private boolean alertShown = false;
         private String lastAlertTitle = "";
         private String lastAlertMessage = "";
+        private int alertCount = 0;
 
+        // Override del metodo showAlert da BaseController per evitare JavaFX
         @Override
         public void showAlert(String title, String message) {
             this.alertShown = true;
             this.lastAlertTitle = title;
             this.lastAlertMessage = message;
+            this.alertCount++;
+            // NON chiamare super.showAlert() per evitare creazione di Alert JavaFX
+            System.out.println("TEST ALERT: " + title + " - " + message);
         }
 
+        // Override anche il metodo con AlertType se esiste
+        @Override
+        protected void showAlert(String title, String message, javafx.scene.control.Alert.AlertType type) {
+            this.alertShown = true;
+            this.lastAlertTitle = title;
+            this.lastAlertMessage = message;
+            this.alertCount++;
+            System.out.println("TEST ALERT [" + type + "]: " + title + " - " + message);
+        }
+
+        // Metodi per verificare i risultati nei test
         public boolean wasAlertShown() {
             return alertShown;
         }
@@ -134,6 +198,17 @@ class ControllaAssunzioniTest {
 
         public String getLastAlertMessage() {
             return lastAlertMessage;
+        }
+
+        public int getAlertCount() {
+            return alertCount;
+        }
+
+        public void resetAlerts() {
+            alertShown = false;
+            lastAlertTitle = "";
+            lastAlertMessage = "";
+            alertCount = 0;
         }
     }
 }

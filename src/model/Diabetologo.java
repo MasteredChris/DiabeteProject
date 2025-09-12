@@ -11,7 +11,6 @@ public class Diabetologo extends Utente {
         this.pazienti = new ArrayList<>();
     }
 
-
     @Override
     public String getType() {
         return "Diabetologo";

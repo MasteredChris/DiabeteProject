@@ -309,7 +309,7 @@ public class PazienteDashboardController extends BaseController {
     }
 
     private void saveRilevazioni() {
-        dataController.salvaRilevazioni(filePathProvider.getRilevazioniFile(), List.of(paziente));
+        dataController.salvaRilevazioni(List.of(paziente));
     }
 
     private void clearRilevazioneFields() {
@@ -319,7 +319,7 @@ public class PazienteDashboardController extends BaseController {
     private void checkGlicemiaRange(Rilevazione rilevazione) {
         if (rilevazione.isFuoriRange()) {
             String msg = createGlicemiaNotificationMessage(rilevazione);
-            AppState.getInstance().aggiungiNotificaGlicemia(msg);
+            AppState.getInstance().aggiungiNotificaGlicemia(Integer.toString(paziente.getMedicoId()),msg);
         }
     }
 
@@ -439,7 +439,7 @@ public class PazienteDashboardController extends BaseController {
     }
 
     private void saveAssunzioni() {
-        dataController.salvaAssunzioni(filePathProvider.getAssunzioniFile(), List.of(paziente));
+        dataController.salvaAssunzioni(List.of(paziente));
     }
 
     private void clearAssunzioneFields() {
@@ -516,7 +516,7 @@ public class PazienteDashboardController extends BaseController {
     }
 
     private void saveEventiClinici() {
-        dataController.salvaEventiClinici(filePathProvider.getEventiCliniciFile(), List.of(paziente));
+        dataController.salvaEventiClinici(List.of(paziente));
     }
 
     private void clearEventoFields() {
@@ -568,7 +568,7 @@ public class PazienteDashboardController extends BaseController {
     }
 
     private void saveTerapieConcomitanti() {
-        dataController.salvaTerapieConcomitanti(filePathProvider.getTerapieConcomitantiFile(), List.of(paziente));
+        dataController.salvaTerapieConcomitanti(List.of(paziente));
     }
 
     private void clearTerapiaConcomitanteFields() {
@@ -638,7 +638,7 @@ public class PazienteDashboardController extends BaseController {
     private void mostraAlertPaziente(Terapia terapia, long assunzioniRegistrate) {
         int mancanti = terapia.getAssunzioniGiornaliere() - (int) assunzioniRegistrate;
         showAlert("Assunzioni incomplete",
-                "Devi ancora registrare " + mancanti + " assunzione(i) per il farmaco: " + terapia.getFarmaco());
+                "Devi ancora registrare " + mancanti + " assunzione(i) per il farmaco: " + terapia.getFarmaco(), Alert.AlertType.WARNING);
     }
 
     private void notificaMedico(Paziente paziente, Terapia terapia) {
@@ -646,7 +646,7 @@ public class PazienteDashboardController extends BaseController {
                 "Il paziente %s %s non ha registrato le assunzioni del farmaco \"%s\" per %d giorni consecutivi.",
                 paziente.getNome(), paziente.getCognome(), terapia.getFarmaco(), GIORNI_CONSECUTIVI_MANCANTI
         );
-        AppState.getInstance().aggiungiNotificaAssunzione(msg);
+        AppState.getInstance().aggiungiNotificaAssunzione(Integer.toString(paziente.getMedicoId()),msg);
     }
 
     // ---------- Navigation and UI ----------

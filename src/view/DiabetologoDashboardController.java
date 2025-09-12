@@ -342,7 +342,7 @@ public class DiabetologoDashboardController extends BaseController {
         if (nuovaTerapia != null) {
             paziente.aggiungiTerapia(nuovaTerapia);
             mostraTerapie(paziente);
-            dataController.salvaTerapie(filePathProvider.getTerapieFile(), List.of(paziente));
+            dataController.salvaTerapie(List.of(paziente));
         }
     }
 
@@ -379,7 +379,7 @@ public class DiabetologoDashboardController extends BaseController {
 
     private void updateTerapiaStatus(Terapia terapia, Terapia.Stato nuovoStato, Paziente paziente) {
         terapia.setStato(nuovoStato);
-        dataController.salvaTerapie(filePathProvider.getTerapieFile(), List.of(paziente));
+        dataController.salvaTerapie(List.of(paziente));
         mostraTerapie(paziente);
     }
 
@@ -394,7 +394,7 @@ public class DiabetologoDashboardController extends BaseController {
         SchedaClinica scheda = createSchedaClinica();
         selectedPaziente.setSchedaClinica(scheda);
 
-        dataController.salvaSchedeCliniche(filePathProvider.getSchedeFile(), List.of(selectedPaziente));
+        dataController.salvaSchedeCliniche(List.of(selectedPaziente));
         showAlert("Successo", "Scheda clinica salvata correttamente.", Alert.AlertType.INFORMATION);
     }
 
@@ -431,13 +431,15 @@ public class DiabetologoDashboardController extends BaseController {
     }
 
     private void showPendingAssunzioniNotifications() {
-        for (String msg : AppState.getInstance().prelevaNotificheAssunzioni()) {
+        // Filtra per il diabetologo corrente
+        for (String msg : AppState.getInstance().prelevaNotificheAssunzioni(Integer.toString(diabetologo.getId()))) {
             showNotificationAlert("Assunzioni non registrate", null, msg, Alert.AlertType.WARNING);
         }
     }
 
     private void showPendingGlicemiaNotifications() {
-        for (String msg : AppState.getInstance().prelevaNotificheGlicemia()) {
+        // Filtra per il diabetologo corrente
+        for (String msg : AppState.getInstance().prelevaNotificheGlicemia(Integer.toString(diabetologo.getId()))) {
             showNotificationAlert("Glicemia fuori range", null, msg, Alert.AlertType.ERROR);
         }
     }
