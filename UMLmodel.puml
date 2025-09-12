@@ -1,0 +1,203 @@
+@startuml
+class model.Assunzione {
+- LocalDate data
+- LocalTime ora
+- String farmaco
+- double quantita
++ LocalDate getData()
++ LocalTime getOra()
++ String getFarmaco()
++ double getQuantita()
+}
+
+
+abstract class model.Utente {
+- int id
+- String nome
+- String cognome
+- String email
+- String password
++ int getId()
++ String getNome()
++ String getCognome()
++ String getEmail()
++ String getPassword()
++ {abstract}String getType()
+}
+
+
+class model.AppState {
+- {static} AppState instance
+- DiabetologoDashboardController diabetologoDashboardController
+- Map<String,List<String>> notificheAssunzioniPerDiabetologo
+- Map<String,List<String>> notificheGlicemiaPerDiabetologo
++ {static} AppState getInstance()
++ void setDiabetologoDashboardController(DiabetologoDashboardController)
++ DiabetologoDashboardController getDiabetologoDashboardController()
++ void aggiungiNotificaAssunzione(String,String)
++ List<String> prelevaNotificheAssunzioni(String)
++ void aggiungiNotificaGlicemia(String,String)
++ List<String> prelevaNotificheGlicemia(String)
++ void aggiungiNotificaAssunzione(String)
++ List<String> prelevaNotificheAssunzioni()
++ void aggiungiNotificaGlicemia(String)
++ List<String> prelevaNotificheGlicemia()
+}
+
+
+class model.Paziente {
+- int medicoId
+- Diabetologo medico
+- List<Rilevazione> rilevazioni
+- List<Terapia> terapie
+- List<Assunzione> assunzioni
+- SchedaClinica schedaClinica
+- List<EventoClinico> eventiClinici
+- List<TerapiaConcomitante> terapieConcomitanti
++ int getMedicoId()
++ Diabetologo getMedico()
++ void setMedico(Diabetologo)
++ List<Terapia> getTerapie()
++ List<Assunzione> getAssunzioni()
++ List<Rilevazione> getRilevazioni()
++ SchedaClinica getSchedaClinica()
++ void setSchedaClinica(SchedaClinica)
++ List<EventoClinico> getEventiClinici()
++ void aggiungiEventoClinico(EventoClinico)
++ List<TerapiaConcomitante> getTerapieConcomitanti()
++ void aggiungiTerapiaConcomitante(TerapiaConcomitante)
++ void rimuoviTerapiaConcomitante(TerapiaConcomitante)
++ void aggiungiRilevazione(Rilevazione)
++ void aggiungiTerapia(Terapia)
++ void aggiungiAssunzione(Assunzione)
++ String getType()
++ String toString()
+}
+
+
+abstract class model.BaseController {
+# void showAlert(String,String,Alert.AlertType)
++ void showAlert(String,String)
+# void navigateToLogin(Window,String)
+# void handleException(String,Exception)
+# boolean isNotEmpty(String)
+# boolean areNotEmpty(String)
+}
+
+class model.TerapiaConcomitante {
+- String tipoTerapia
+- String descrizione
++ String getTipoTerapia()
++ void setTipoTerapia(String)
++ String getDescrizione()
++ void setDescrizione(String)
++ String toString()
+}
+
+
+class model.Diabetologo {
+- List<Paziente> pazienti
++ String getType()
++ List<Paziente> getPazienti()
++ void addPaziente(Paziente)
+}
+
+
+class model.SchedaClinica {
+- String fattoriRischio
+- String pregressePatologie
+- String comorbidita
++ String getFattoriRischio()
++ void setFattoriRischio(String)
++ String getPregressePatologie()
++ void setPregressePatologie(String)
++ String getComorbidita()
++ void setComorbidita(String)
++ String toString()
+}
+
+
+class model.EventoClinico {
+- int pazienteId
+- String tipo
+- String descrizione
+- LocalDate data
+- LocalTime ora
+- String note
++ String getTipo()
++ String getDescrizione()
++ LocalDate getData()
++ LocalTime getOra()
++ String getNote()
+}
+
+
+class model.Terapia {
+- String farmaco
+- int assunzioniGiornaliere
+- double quantitaPerAssunzione
+- String indicazioni
+- LocalDate dataInizio
+- LocalDate dataFine
+- int medicoId
+- Stato stato
++ String getFarmaco()
++ int getAssunzioniGiornaliere()
++ double getQuantitaPerAssunzione()
++ String getIndicazioni()
++ LocalDate getDataInizio()
++ LocalDate getDataFine()
++ int getMedicoId()
++ Stato getStato()
++ void setStato(Stato)
++ void aggiornaStatoAutomatico()
++ boolean isAttiva()
++ String toString()
+}
+
+
+enum model.Stato {
++  ATTIVA
++  IN_PAUSA
++  TERMINATA
+}
+
+class model.FilePathProvider {
+- {static} String RESOURCES_PATH
+- String schedeFile
+- String rilevazioniFile
+- String terapieFile
+- String assunzioniFile
+- String eventiCliniciFile
+- String terapieConcomitantiFile
++ String getSchedeFile()
++ String getRilevazioniFile()
++ String getTerapieFile()
++ String getAssunzioniFile()
++ String getEventiCliniciFile()
++ String getTerapieConcomitantiFile()
+}
+
+
+class model.Rilevazione {
+- LocalDate data
+- String tipoPasto
+- int valore
+- boolean fuoriRange
++ LocalDate getData()
++ void setData(LocalDate)
++ String getTipoPasto()
++ void setTipoPasto(String)
++ int getValore()
++ void setValore(int)
++ boolean isFuoriRange()
+- boolean calcolaFuoriRange()
++ String toString()
+}
+
+
+
+
+model.Utente <|-- model.Paziente
+model.Utente <|-- model.Diabetologo
+@enduml

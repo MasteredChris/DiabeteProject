@@ -357,8 +357,7 @@ public class DataController extends BaseController {
             }
         }
 
-        private Utente createUtente(String type, int id, String nome, String cognome,
-                                    String email, String password, String[] fields) {
+        private Utente createUtente(String type, int id, String nome, String cognome,String email, String password, String[] fields) {
             if (type.equalsIgnoreCase("Paziente")) {
                 if (fields.length <= ColumnIndex.PAZIENTE_MEDICO_ID) {
                     LOGGER.log(Level.WARNING, "Paziente senza medico ID");

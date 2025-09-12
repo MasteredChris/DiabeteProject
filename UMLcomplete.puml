@@ -1,0 +1,617 @@
+@startuml
+class controller.TerapiaFormController {
+- TextField farmacoField
+- TextField assunzioniField
+- TextField quantitaField
+- TextField indicazioniField
+- DatePicker dataInizioPicker
+- DatePicker dataFinePicker
+- ComboBox<Terapia.Stato> statoCombo
+- int medicoId
+- Terapia nuovaTerapia
++ Terapia getNuovaTerapia()
++ void setMedicoId(int)
+- void handleSalva()
+- void handleAnnulla()
+- void showAlert(String,String)
+}
+
+
+class model.Assunzione {
+- LocalDate data
+- LocalTime ora
+- String farmaco
+- double quantita
++ LocalDate getData()
++ LocalTime getOra()
++ String getFarmaco()
++ double getQuantita()
+}
+
+
+class model.Paziente {
+- int medicoId
+- Diabetologo medico
+- List<Rilevazione> rilevazioni
+- List<Terapia> terapie
+- List<Assunzione> assunzioni
+- SchedaClinica schedaClinica
+- List<EventoClinico> eventiClinici
+- List<TerapiaConcomitante> terapieConcomitanti
++ int getMedicoId()
++ Diabetologo getMedico()
++ void setMedico(Diabetologo)
++ List<Terapia> getTerapie()
++ List<Assunzione> getAssunzioni()
++ List<Rilevazione> getRilevazioni()
++ SchedaClinica getSchedaClinica()
++ void setSchedaClinica(SchedaClinica)
++ List<EventoClinico> getEventiClinici()
++ void aggiungiEventoClinico(EventoClinico)
++ List<TerapiaConcomitante> getTerapieConcomitanti()
++ void aggiungiTerapiaConcomitante(TerapiaConcomitante)
++ void rimuoviTerapiaConcomitante(TerapiaConcomitante)
++ void aggiungiRilevazione(Rilevazione)
++ void aggiungiTerapia(Terapia)
++ void aggiungiAssunzione(Assunzione)
++ String getType()
++ String toString()
+}
+
+
+class model.TerapiaConcomitante {
+- String tipoTerapia
+- String descrizione
++ String getTipoTerapia()
++ void setTipoTerapia(String)
++ String getDescrizione()
++ void setDescrizione(String)
++ String toString()
+}
+
+
+class model.SchedaClinica {
+- String fattoriRischio
+- String pregressePatologie
+- String comorbidita
++ String getFattoriRischio()
++ void setFattoriRischio(String)
++ String getPregressePatologie()
++ void setPregressePatologie(String)
++ String getComorbidita()
++ void setComorbidita(String)
++ String toString()
+}
+
+
+class controller.DataController {
+- {static} Logger LOGGER
+- {static} String CSV_DELIMITER
+- {static} int CSV_SPLIT_LIMIT
+- FilePathProvider filePathProvider
+- CsvProcessor csvProcessor
+- EntityParsers entityParsers
+- EntitySerializers entitySerializers
++ List<Utente> caricaUtenti(String)
++ void caricaRilevazioni(String,List<Utente>)
++ void caricaTerapie(String,List<Utente>)
++ void caricaAssunzioni(String,List<Utente>)
++ void caricaSchedeCliniche(String,List<Utente>)
++ void caricaEventiClinici(String,List<Utente>)
++ void caricaTerapieConcomitanti(String,List<Utente>)
++ void salvaRilevazioni(List<Paziente>)
++ void salvaTerapie(List<Paziente>)
++ void salvaAssunzioni(List<Paziente>)
++ void salvaSchedeCliniche(List<Paziente>)
++ void salvaEventiClinici(List<Paziente>)
++ void salvaTerapieConcomitanti(List<Paziente>)
+- Map<Integer,Paziente> createPazientiMap(List<Utente>)
+- void associaPazientiAiMedici(List<Utente>)
+- void associaPazienteAMedico(Paziente,Map<Integer,Diabetologo>)
+}
+
+
+class controller.DataController$CsvHeaders {
+~ {static} String RILEVAZIONI
+~ {static} String TERAPIE
+~ {static} String ASSUNZIONI
+~ {static} String SCHEDE_CLINICHE
+~ {static} String EVENTI_CLINICI
+~ {static} String TERAPIE_CONCOMITANTI
+}
+
+class controller.DataController$ColumnIndex {
+~ {static} int UTENTE_ID
+~ {static} int UTENTE_TYPE
+~ {static} int UTENTE_NOME
+~ {static} int UTENTE_COGNOME
+~ {static} int UTENTE_EMAIL
+~ {static} int UTENTE_PASSWORD
+~ {static} int PAZIENTE_MEDICO_ID
+}
+
+class controller.DataController$CsvProcessor {
++ List<T> loadEntities(String,Function<String,T>)
++ int loadAndProcessEntities(String,Function<String,Boolean>)
++ void saveWithMerge(String,List<Paziente>,String,Function<Paziente,List<String>>)
+- void mergeExistingData(String,List<String>,Set<String>)
+- void writeFile(String,List<String>)
+}
+
+class controller.DataController$EntityParsers {
++ Utente parseUtente(String)
+- Utente createUtente(String,int,String,String,String,String,String[])
++ Boolean parseRilevazione(String,Map<Integer,Paziente>)
++ Boolean parseTerapia(String,Map<Integer,Paziente>)
++ Boolean parseAssunzione(String,Map<Integer,Paziente>)
++ Boolean parseSchedaClinica(String,Map<Integer,Paziente>)
++ Boolean parseEventoClinico(String,Map<Integer,Paziente>)
++ Boolean parseTerapiaConcomitante(String,Map<Integer,Paziente>)
+}
+
+class controller.DataController$EntitySerializers {
++ List<String> serializeRilevazioni(Paziente)
++ List<String> serializeTerapie(Paziente)
++ List<String> serializeAssunzioni(Paziente)
++ List<String> serializeSchedeCliniche(Paziente)
++ List<String> serializeEventiClinici(Paziente)
++ List<String> serializeTerapieConcomitanti(Paziente)
+- String nullSafe(String)
+}
+
+class controller.DataController$DataProcessingException {
+}
+class model.FilePathProvider {
+- {static} String RESOURCES_PATH
+- String schedeFile
+- String rilevazioniFile
+- String terapieFile
+- String assunzioniFile
+- String eventiCliniciFile
+- String terapieConcomitantiFile
++ String getSchedeFile()
++ String getRilevazioniFile()
++ String getTerapieFile()
++ String getAssunzioniFile()
++ String getEventiCliniciFile()
++ String getTerapieConcomitantiFile()
+}
+
+
+class controller.LoginViewController {
+- {static} Logger LOGGER
+- {static} String ERROR_STYLE
+- {static} String INFO_STYLE
+- {static} String PAZIENTE_DASHBOARD_FXML
+- {static} String DIABETOLOGO_DASHBOARD_FXML
+- {static} String DASHBOARD_TITLE_PREFIX
+- TextField emailField
+- PasswordField passwordField
+- Label messageLabel
+- LoginController loginController
+- void initialize()
+- void initializeControllerAsync()
+- void setupEventHandlers()
+- void handleLogin()
+- boolean isValidEmail(String)
+- void performLogin(String,String)
+- void handleLoginResult(Utente)
+- void navigateToDashboard(Utente)
+- void initializeDashboardController(FXMLLoader,Utente)
+- void maximizeWindow(Stage)
+- void setFormEnabled(boolean)
+- void showMessage(String,String)
+}
+
+
+class model.Terapia {
+- String farmaco
+- int assunzioniGiornaliere
+- double quantitaPerAssunzione
+- String indicazioni
+- LocalDate dataInizio
+- LocalDate dataFine
+- int medicoId
+- Stato stato
++ String getFarmaco()
++ int getAssunzioniGiornaliere()
++ double getQuantitaPerAssunzione()
++ String getIndicazioni()
++ LocalDate getDataInizio()
++ LocalDate getDataFine()
++ int getMedicoId()
++ Stato getStato()
++ void setStato(Stato)
++ void aggiornaStatoAutomatico()
++ boolean isAttiva()
++ String toString()
+}
+
+
+enum model.Stato {
++  ATTIVA
++  IN_PAUSA
++  TERMINATA
+}
+
+abstract class model.Utente {
+- int id
+- String nome
+- String cognome
+- String email
+- String password
++ int getId()
++ String getNome()
++ String getCognome()
++ String getEmail()
++ String getPassword()
++ {abstract}String getType()
+}
+
+
+class model.AppState {
+- {static} AppState instance
+- DiabetologoDashboardController diabetologoDashboardController
+- Map<String,List<String>> notificheAssunzioniPerDiabetologo
+- Map<String,List<String>> notificheGlicemiaPerDiabetologo
++ {static} AppState getInstance()
++ void setDiabetologoDashboardController(DiabetologoDashboardController)
++ DiabetologoDashboardController getDiabetologoDashboardController()
++ void aggiungiNotificaAssunzione(String,String)
++ List<String> prelevaNotificheAssunzioni(String)
++ void aggiungiNotificaGlicemia(String,String)
++ List<String> prelevaNotificheGlicemia(String)
++ void aggiungiNotificaAssunzione(String)
++ List<String> prelevaNotificheAssunzioni()
++ void aggiungiNotificaGlicemia(String)
++ List<String> prelevaNotificheGlicemia()
+}
+
+
+abstract class model.BaseController {
+# void showAlert(String,String,Alert.AlertType)
++ void showAlert(String,String)
+# void navigateToLogin(Window,String)
+# void handleException(String,Exception)
+# boolean isNotEmpty(String)
+# boolean areNotEmpty(String)
+}
+
+class model.Diabetologo {
+- List<Paziente> pazienti
++ String getType()
++ List<Paziente> getPazienti()
++ void addPaziente(Paziente)
+}
+
+
+class controller.ContattaMedicoController {
+- TextArea messaggioArea
+- Paziente paziente
++ void setPaziente(Paziente)
+- void handleInvia()
+- void handleAnnulla()
+- void showAlert(String,String)
+}
+
+
+class controller.LoginController {
+- {static} Logger LOGGER
+- List<Utente> utenti
+- DataController dataController
+- void caricaDatiPazienti()
++ Utente login(String,String)
++ boolean esisteUtente(String)
++ String getStatisticheSistema()
++ List<Utente> getUtenti()
++ DataController getDataController()
+}
+
+
+class controller.LoginController$FilePaths {
+~ {static} String UTENTI
+~ {static} String RILEVAZIONI
+~ {static} String TERAPIE
+~ {static} String ASSUNZIONI
+~ {static} String SCHEDE_CLINICHE
+~ {static} String EVENTI_CLINICI
+~ {static} String TERAPIE_CONCOMITANTI
+}
+
+class model.EventoClinico {
+- int pazienteId
+- String tipo
+- String descrizione
+- LocalDate data
+- LocalTime ora
+- String note
++ String getTipo()
++ String getDescrizione()
++ LocalDate getData()
++ LocalTime getOra()
++ String getNote()
+}
+
+
+class model.Rilevazione {
+- LocalDate data
+- String tipoPasto
+- int valore
+- boolean fuoriRange
++ LocalDate getData()
++ void setData(LocalDate)
++ String getTipoPasto()
++ void setTipoPasto(String)
++ int getValore()
++ void setValore(int)
++ boolean isFuoriRange()
+- boolean calcolaFuoriRange()
++ String toString()
+}
+
+class controller.PazienteDashboardController {
+    - Label welcomeLabel
+    - Label medicoLabel
+    - HBox pagina1
+    - HBox pagina2
+
+    - static List<String> TIPI_PASTO
+    - static List<String> TIPI_EVENTO
+    - static int GIORNI_CONSECUTIVI_MANCANTI
+
+    - Paziente paziente
+    - DataController dataController
+    - FilePathProvider filePathProvider
+
+    --Rilevazioni--
+    - DatePicker datePicker
+    - ChoiceBox<String> tipoPastoChoice
+    - TextField valoreField
+    - TableView<Rilevazione> rilevazioniTable
+    - TableColumn<Rilevazione,String> dataColumn
+    - TableColumn<Rilevazione,String> tipoPastoColumn
+    - TableColumn<Rilevazione,Integer> valoreColumn
+
+    --Terapie--
+    - TableView<Terapia> terapieTable
+    - TableColumn<Terapia,String> farmacoColumn
+    - TableColumn<Terapia,Integer> assunzioniColumn
+    - TableColumn<Terapia,Double> quantitaColumn
+    - TableColumn<Terapia,String> indicazioniColumn
+    - TableColumn<Terapia,String> dataInizioColumn
+    - TableColumn<Terapia,String> dataFineColumn
+    - TableColumn<Terapia,Terapia.Stato> statoColumn
+
+    --Assunzioni--
+    - DatePicker assunzioneDatePicker
+    - TextField oraField
+    - ComboBox<String> farmacoChoice
+    - TextField quantitaField
+    - TableView<Assunzione> assunzioniTable
+    - TableColumn<Assunzione,String> dataAssunzioneColumn
+    - TableColumn<Assunzione,String> oraAssunzioneColumn
+    - TableColumn<Assunzione,String> farmacoAssunzioneColumn
+    - TableColumn<Assunzione,Number> quantitaAssunzioneColumn
+
+    --Eventi clinici--
+    - TableView<EventoClinico> eventiTable
+    - TableColumn<EventoClinico,String> tipoEventoColumn
+    - TableColumn<EventoClinico,String> descrizioneEventoColumn
+    - TableColumn<EventoClinico,String> dataEventoColumn
+    - TableColumn<EventoClinico,String> oraEventoColumn
+    - TableColumn<EventoClinico,String> noteEventoColumn
+    - ChoiceBox<String> tipoEventoChoice
+    - TextField descrizioneEventoField
+    - TextField noteEventoField
+
+    --Terapie concomitanti--
+    - TextField tipoTerapiaField
+    - TextField descrizioneTerapiaField
+    - ListView<TerapiaConcomitante> terapieConcomitantiList
+
+
+    --Initial set up Methods--
+    + void initialize()
+    - void initializeChoiceBoxes()
+    - void initializeTableColumns()
+    - void initializeRowFactories()
+    - String getStyleForTerapiaStato(Terapia.Stato)
+    + void setUtente(Paziente)
+    - void initializeUserInterface()
+    - void loadPatientData()
+    - void loadRilevazioni()
+    - void loadTerapie()
+    - void loadAssunzioni()
+    - void loadEventiClinici()
+    - void loadTerapieConcomitanti()
+    - void performInitialChecks()
+
+    --Rilevazioni Methods--
+    + void handleSalvaRilevazione()
+    - RilevazioneInput getRilevazioneInput()
+    - boolean isValidRilevazioneInput(RilevazioneInput)
+    - boolean isDuplicateRilevazione(RilevazioneInput)
+    - Rilevazione createRilevazione(RilevazioneInput)
+    - void saveRilevazioni()
+    - void clearRilevazioneFields()
+    - void checkGlicemiaRange(Rilevazione)
+    - String createGlicemiaNotificationMessage(Rilevazione)
+    + void handleEliminaRilevazione()
+    - void aggiornaListaRilevazioni()
+
+    --Terapie Methods--
+    - void aggiornaListaTerapie()
+    - void updateFarmaciChoice(LocalDate,List<Terapia>)
+    - boolean isActiveTerapia(Terapia,LocalDate)
+
+    --Assunzioni Methods--
+    + void handleSalvaAssunzione()
+    - AssunzioneInput getAssunzioneInput()
+    - boolean isValidAssunzioneInput(AssunzioneInput)
+    - boolean isValidFarmaco(String)
+    - void saveAssunzioni()
+    - void clearAssunzioneFields()
+    + void handleEliminaAssunzione()
+    - void aggiornaListaAssunzioni()
+    - void aggiornaFarmaciChoice()
+
+    --Eventi Clinici Methods--
+    + void handleAggiungiEvento()
+    - EventoInput getEventoInput()
+    - boolean isValidEventoInput(EventoInput)
+    - void saveEventiClinici()
+    - void clearEventoFields()
+    - void aggiornaListaEventi()
+
+    --Terapie Concomitanti Methods--
+    + void handleAggiungiTerapiaConcomitante()
+    + void handleRimuoviTerapiaConcomitante()
+    - void saveTerapieConcomitanti()
+    - void clearTerapiaConcomitanteFields()
+    - void aggiornaListaTerapieConcomitanti()
+
+    --Monitoring and Notifications--
+    + void controllaAssunzioni(Paziente)
+    - void checkDailyAssunzioni(Paziente,Terapia,LocalDate)
+    - void checkConsecutiveMissingAssunzioni(Paziente,Terapia,LocalDate)
+    - long countAssunzioniForDate(Paziente,String,LocalDate)
+    - void mostraAlertPaziente(Terapia,long)
+    - void notificaMedico(Paziente,Terapia)
+
+    --Navigation and UI--
+    + void handleLogout()
+    + void handleApriContatta()
+    + void mostraPagina1()
+    + void mostraPagina2()
+    - void showContactDoctorDialog() throws Exception
+    - void showPage(HBox,HBox)
+
+    --Utility Methods--
+    - boolean confirmDeletion(String)
+
+    --Input Record classes--
+    - record RilevazioneInput(LocalDate,String,String)
+    - record AssunzioneInput(LocalDate,String,String,String)
+    - record EventoInput(String,String,String)
+}
+
+class controller.DiabetologoDashboardController {
+    - Label welcomeLabel
+    - ListView<Paziente> pazientiList
+    - VBox pagina1
+    - VBox pagina2
+    - static Map<String,Integer> ORDINE_PASTI
+    - Diabetologo diabetologo
+    - DataController dataController
+    - FilePathProvider filePathProvider
+
+
+    --Rilevazioni--
+    - TableView<Rilevazione> rilevazioniTable
+    - TableColumn<Rilevazione,String> dataColumn
+    - TableColumn<Rilevazione,String> tipoPastoColumn
+    - TableColumn<Rilevazione,Integer> valoreColumn
+
+    --Terapie--
+    - TableView<Terapia> terapieTable
+    - TableColumn<Terapia,String> farmacoColumn
+    - TableColumn<Terapia,Integer> assunzioniColumn
+    - TableColumn<Terapia,Double> quantitaColumn
+    - TableColumn<Terapia,String> indicazioniColumn
+    - TableColumn<Terapia,String> dataInizioColumn
+    - TableColumn<Terapia,String> dataFineColumn
+    - TableColumn<Terapia,Terapia.Stato> statoColumn
+
+    --Assunzioni--
+    - TableView<Assunzione> assunzioniTable
+    - TableColumn<Assunzione,String> dataAssunzioneColumn
+    - TableColumn<Assunzione,String> oraAssunzioneColumn
+    - TableColumn<Assunzione,String> farmacoAssunzioneColumn
+    - TableColumn<Assunzione,Number> quantitaAssunzioneColumn
+
+    --Scheda Clinica--
+    - TextArea fattoriRischioArea
+    - TextArea patologieArea
+    - TextArea comorbiditaArea
+    - Button salvaSchedaBtn
+
+    --Eventi clinici--
+    - TableView<EventoClinico> eventiTable
+    - TableColumn<EventoClinico,String> tipoEventoColumn
+    - TableColumn<EventoClinico,String> descrizioneEventoColumn
+    - TableColumn<EventoClinico,String> dataEventoColumn
+    - TableColumn<EventoClinico,String> oraEventoColumn
+    - TableColumn<EventoClinico,String> noteEventoColumn
+    - ListView<TerapiaConcomitante> terapieConcomitantiMedicoList
+
+
+    --Initial set up Methods--
+    + void initialize()
+    - void initializeTableColumns()
+    - void initializeRowFactories()
+    - void initializeEditableColumns()
+    + void setUtente(Diabetologo)
+    - void initializeUserInterface()
+    - void loadPatientsData()
+    - void loadPatientData(Paziente)
+    - void setupPatientSelectionListener()
+    - void updatePatientViews(Paziente)
+    - void selectFirstPatient()
+
+    --Display Methods--
+    - void mostraRilevazioni(Paziente)
+    - String determinaColore(String,int)
+    - String determineColorForPreMeal(int)
+    - String determineColorForPostMeal(int)
+    - void mostraTerapie(Paziente)
+    - void updateTerapieStatus(Paziente)
+    - String getStyleForTerapiaStato(Terapia.Stato)
+    - void mostraAssunzioni(Paziente)
+    - void mostraSchedaClinica(Paziente)
+    - void populateSchedaClinicaFields(SchedaClinica)
+    - void clearSchedaClinicaFields()
+    - void mostraEventi(Paziente)
+    - void aggiornaTerapieConcomitanti(Paziente)
+
+    --Notification Methods--
+    + void mostraNotificaAssunzioniMancanti(Paziente,Terapia)
+    + void mostraNotificaGlicemiaFuoriRange(Paziente,Rilevazione)
+    + void mostraNotifichePendenti()
+    - void showPendingAssunzioniNotifications()
+    - void showPendingGlicemiaNotifications()
+    - void showNotificationAlert(String,String,String,Alert.AlertType)
+
+    --Page Navigation--
+    + void mostraPagina1()
+    + void mostraPagina2()
+    - void showPage(VBox,VBox)
+
+    --Event Handlers--
+    + void handleLogout()
+    + void handleAggiungiTerapia()
+    - void showTerapiaDialog(Paziente)
+    + void handleModificaStatoTerapia()
+    - void showStatoTerapiaDialog(Terapia,Paziente)
+    - boolean isValidStatusChange(Terapia)
+    - void updateTerapiaStatus(Terapia,Terapia.Stato,Paziente)
+    + void handleSalvaSchedaClinica()
+    - SchedaClinica createSchedaClinica()
+}
+
+
+
+
+controller.BaseController <|-- controller.DataController
+controller.BaseController <|-- controller.DiabetologoDashboardController
+controller.BaseController <|-- controller.PazienteDashboardController
+controller.DataController +.. controller.DataController$CsvHeaders
+controller.DataController +.. controller.DataController$ColumnIndex
+controller.DataController +.. controller.DataController$CsvProcessor
+controller.DataController +.. controller.DataController$EntityParsers
+controller.DataController +.. controller.DataController$EntitySerializers
+controller.DataController +.. controller.DataController$DataProcessingException
+controller.RuntimeException <|-- controller.DataController$DataProcessingException
+model.Utente <|-- model.Paziente
+model.Utente <|-- model.Diabetologo
+controller.LoginController +.. controller.LoginController$FilePaths
+@enduml

@@ -92,54 +92,6 @@ class DiabetologoDashboardControllerTest {
         };
     }
 
-    @Test
-    @DisplayName("Test determinazione colore per rilevazioni pre-pasto")
-    void testColoreRilevazioniPrePasto() {
-        // Test per valori prima del pasto (normale: 80-130 mg/dL)
-
-        // Ipoglicemia
-        String coloreIpo = determineColorForPreMeal(70);
-        assertEquals("deepskyblue", coloreIpo);
-
-        // Normale
-        String coloreNormale = determineColorForPreMeal(100);
-        assertEquals("lightgreen", coloreNormale);
-
-        String coloreLimiteSuperiore = determineColorForPreMeal(130);
-        assertEquals("lightgreen", coloreLimiteSuperiore);
-
-        // Elevato moderato
-        String coloreElevato = determineColorForPreMeal(150);
-        assertEquals("khaki", coloreElevato);
-
-        // Molto elevato
-        String coloreMoltoElevato = determineColorForPreMeal(200);
-        assertEquals("orange", coloreMoltoElevato);
-    }
-
-    @Test
-    @DisplayName("Test determinazione colore per rilevazioni post-pasto")
-    void testColoreRilevazioniPostPasto() {
-        // Test per valori dopo il pasto (normale: <180 mg/dL)
-
-        // Normale
-        String coloreNormale = determineColorForPostMeal(150);
-        assertEquals("lightgreen", coloreNormale);
-
-        String coloreLimiteSuperiore = determineColorForPostMeal(179);
-        assertEquals("lightgreen", coloreLimiteSuperiore);
-
-        // Elevato moderato
-        String coloreElevato = determineColorForPostMeal(200);
-        assertEquals("orange", coloreElevato);
-
-        String coloreLimiteElevato = determineColorForPostMeal(250);
-        assertEquals("orange", coloreLimiteElevato);
-
-        // Molto elevato
-        String coloreMoltoElevato = determineColorForPostMeal(300);
-        assertEquals("tomato", coloreMoltoElevato);
-    }
 
     @Test
     @DisplayName("Test aggiornamento automatico stato terapie")
@@ -367,17 +319,4 @@ class DiabetologoDashboardControllerTest {
         assertEquals("Neuropatia", paziente1.getSchedaClinica().getComorbidita());
     }
 
-    // Metodi helper per simulare la logica del controller
-    private String determineColorForPreMeal(int valore) {
-        if (valore < 80) return "deepskyblue";
-        else if (valore <= 130) return "lightgreen";
-        else if (valore <= 180) return "khaki";
-        else return "orange";
-    }
-
-    private String determineColorForPostMeal(int valore) {
-        if (valore < 180) return "lightgreen";
-        else if (valore <= 250) return "orange";
-        else return "tomato";
-    }
 }
