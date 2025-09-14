@@ -157,8 +157,8 @@
                     <HBox spacing="10">
                         <TextField fx:id="tipoTerapiaField" promptText="Tipo terapia" />
                         <TextField fx:id="descrizioneTerapiaField" promptText="Descrizione (opzionale)" />
-                        <Button onAction="#handleAggiungiTerapiaConcomitante" text="Aggiungi" />
-                        <Button onAction="#handleRimuoviTerapiaConcomitante" text="Rimuovi" />
+                        <Button onAction="#handleAggiungiTerapiaConcomitante" style="-fx-background-color: #4A90E2; -fx-text-fill: white; -fx-background-radius: 5;" text="Aggiungi" />
+                        <Button onAction="#handleRimuoviTerapiaConcomitante" style="-fx-background-color: #4A90E2; -fx-text-fill: white; -fx-background-radius: 5;" text="Rimuovi" />
                     </HBox>
                     <ListView fx:id="terapieConcomitantiList" VBox.vgrow="ALWAYS" />
                 </VBox>
