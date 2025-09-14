@@ -1,5 +1,6 @@
 package controller;
 
+import model.FilePathProvider;
 import model.Utente;
 import java.util.List;
 import java.util.logging.Logger;
@@ -13,17 +14,8 @@ public class LoginController {
 
     private static final Logger LOGGER = Logger.getLogger(LoginController.class.getName());
 
-    // Configurazione percorsi file
-    private static final class FilePaths {
-        static final String UTENTI = "src/resources/utenti.csv";
-        static final String RILEVAZIONI = "src/resources/rilevazioni.csv";
-        static final String TERAPIE = "src/resources/terapie.csv";
-        static final String ASSUNZIONI = "src/resources/assunzioni.csv";
-        static final String SCHEDE_CLINICHE = "src/resources/schede_cliniche.csv";
-        static final String EVENTI_CLINICI = "src/resources/eventi_clinici.csv";
-        static final String TERAPIE_CONCOMITANTI = "src/resources/terapie_concomitanti.csv";
-    }
 
+    private FilePathProvider filePaths= new FilePathProvider();
     private final List<Utente> utenti;
     private final DataController dataController;
 
@@ -37,7 +29,7 @@ public class LoginController {
         this.dataController = new DataController();
 
         // Carica utenti (base del sistema)
-        this.utenti = dataController.caricaUtenti(FilePaths.UTENTI);
+        this.utenti = dataController.caricaUtenti(filePaths.getUtenti());
 
         if (utenti.isEmpty()) {
             LOGGER.warning("Nessun utente caricato. Verificare il file utenti.csv");
@@ -59,12 +51,12 @@ public class LoginController {
             LOGGER.info("Caricamento dati pazienti in corso...");
 
             // Carica dati clinici
-            dataController.caricaRilevazioni(FilePaths.RILEVAZIONI, utenti);
-            dataController.caricaTerapie(FilePaths.TERAPIE, utenti);
-            dataController.caricaAssunzioni(FilePaths.ASSUNZIONI, utenti);
-            dataController.caricaSchedeCliniche(FilePaths.SCHEDE_CLINICHE, utenti);
-            dataController.caricaEventiClinici(FilePaths.EVENTI_CLINICI, utenti);
-            dataController.caricaTerapieConcomitanti(FilePaths.TERAPIE_CONCOMITANTI, utenti);
+            dataController.caricaRilevazioni(filePaths.getRilevazioniFile(), utenti);
+            dataController.caricaTerapie(filePaths.getTerapieFile(), utenti);
+            dataController.caricaAssunzioni(filePaths.getAssunzioniFile(), utenti);
+            dataController.caricaSchedeCliniche(filePaths.getSchedeClinicheFile(), utenti);
+            dataController.caricaEventiClinici(filePaths.getEventiCliniciFile(), utenti);
+            dataController.caricaTerapieConcomitanti(filePaths.getTerapieConcomitantiFile(), utenti);
 
             LOGGER.info("Caricamento dati pazienti completato");
 
