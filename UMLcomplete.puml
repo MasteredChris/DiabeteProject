@@ -308,15 +308,6 @@ class controller.LoginController {
 }
 
 
-class controller.LoginController$FilePaths {
-~ {static} String UTENTI
-~ {static} String RILEVAZIONI
-~ {static} String TERAPIE
-~ {static} String ASSUNZIONI
-~ {static} String SCHEDE_CLINICHE
-~ {static} String EVENTI_CLINICI
-~ {static} String TERAPIE_CONCOMITANTI
-}
 
 class model.EventoClinico {
 - int pazienteId
