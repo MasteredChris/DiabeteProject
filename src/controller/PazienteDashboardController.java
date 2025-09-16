@@ -139,7 +139,7 @@ public class PazienteDashboardController extends BaseController {
     private void initializeChoiceBoxes() {
         tipoPastoChoice.getItems().addAll(TIPI_PASTO);
         tipoEventoChoice.getItems().addAll(TIPI_EVENTO);
-        tipoEventoChoice.setValue(TIPI_PASTO.get(0));
+        tipoPastoChoice.setValue(TIPI_PASTO.get(0));
         tipoEventoChoice.setValue(TIPI_EVENTO.get(0));
     }
 
